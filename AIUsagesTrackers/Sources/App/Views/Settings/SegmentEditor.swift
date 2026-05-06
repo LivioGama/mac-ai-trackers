@@ -4,14 +4,10 @@ import AIUsagesTrackersLib
 struct SegmentEditor: View {
     let preferences: any AppPreferences
     @Bindable var store: UsageStore
-    let index: Int
+    let segmentID: UUID
 
     private var segmentBinding: Binding<MenuBarSegmentConfig>? {
-        guard preferences.menuBarSegments.indices.contains(index) else { return nil }
-        return Binding(
-            get: { preferences.menuBarSegments[index] },
-            set: { preferences.menuBarSegments[index] = $0 }
-        )
+        SettingsConfigurationBindings.menuBarSegment(preferences: preferences, segmentID: segmentID)
     }
 
     var body: some View {
