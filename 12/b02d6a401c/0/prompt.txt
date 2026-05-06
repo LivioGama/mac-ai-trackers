@@ -1,0 +1,92 @@
+<system_instruction>
+You are working inside Conductor, a Mac app that lets the user run many coding agents in parallel.
+Your work should take place in the /Users/fcamblor/conductor/workspaces/mac-ai-trackers/new-york directory (unless otherwise directed), which has been set up for you to work in.
+Each workspace has a .context directory (gitignored) where you can save files to collaborate with other agents.
+The target branch for this workspace is origin/main. Use this for actions like diffing (`git diff origin/main...`) or creating PRs (`gh pr create --base main`).
+
+Do not rename the current branch unless the user explicitly tells you to do so.
+
+By default, the user will only see the last message that you send before stopping. Include all essential information in the last message. The intermediate messages will be collapsed and accessible by the user but not displayed by default.
+
+If the user asks you to work on several unrelated tasks, you can suggest they start new workspaces.
+Sometimes the user might send you a message they meant to send in a different workspace or a different chat. If something doesn't make sense in the context of your work, just ask. 
+If the user asks for help with Conductor, you can ask them to go to "Help -> Send Feedback" to get in touch with our team.
+</system_instruction>
+
+j'ai eu un crash lors de la suppression d'un hint segment
+
+Backtrace:
+
+💣 Program crashed: Signal 5: Backtracing from 0
+💣 Program crashed: System trap at 0x000000019f345d20
+
+Platform: arm64 macOS 26.2 (25C56)
+
+Thread 0 crashed:
+
+  0 0x000000019f345d20 _assertionFailure(_:_:file:line:flags:) + 364 in libswiftCore.dylib
+  1 0x000000019f328894 Array._checkSubscript(_:wasNativeTypeChecked:) + 160 in libswiftCore.dylib
+  2 0x000000019f329180 Array.subscript.getter + 88 in libswiftCore.dylib
+  3 closure #1 in SegmentEditor.segmentBinding.getter + 272 in AIUsagesTrackers at /Users/fcamblor/conductor/workspaces/mac-ai-trackers/missoula/AIUsagesTrackers/Sources/App/Views/Settings/SegmentEditor.swift:12:47
+
+    10│         guard preferences.menuBarSegments.indices.contains(index) else { return nil }
+    11│         return Binding(
+    12│             get: { preferences.menuBarSegments[index] },
+      │                                               ▲
+    13│             set: { preferences.menuBarSegments[index] = $0 }
+    14│         )
+
+  4 0x0000000237ba0350 <deduplicated_symbol> + 28 in SwiftUICore
+  5 0x0000000237b9e870 Location.update() + 44 in SwiftUICore
+  6 0x00000002373e4758 <unknown> + 16 in SwiftUICore
+  7 0x0000000237b9f6f8 LocationBox.update() + 288 in SwiftUICore
+  8 0x0000000237ba0198 ProjectedLocation.update() + 216 in SwiftUICore
+  9 0x0000000237b9f6f8 LocationBox.update() + 288 in SwiftUICore
+ 10 0x0000000237c8b168 Binding.ScopedLocation.update() + 56 in SwiftUICore
+ 11 0x0000000237b9f6f8 LocationBox.update() + 288 in SwiftUICore
+ 12 0x0000000237c8b008 Binding.Box.update(property:phase:) + 432 in SwiftUICore
+ 13 0x0000000237927380 static BoxVTable.update(elt:property:phase:) + 140 in SwiftUICore
+ 14 0x00000002379261cc _DynamicPropertyBuffer.update(container:phase:) + 144 in SwiftUICore
+ 15 0x00000002379dd0b0 closure #1 in closure #1 in DynamicBody.updateValue() + 304 in SwiftUICore
+ 16 0x0000000237d2a0a4 withUnsafeMutablePointer<A, B, C>(to:_:) + 160 in SwiftUICore
+ 17 0x00000002379dcaa8 closure #1 in DynamicBody.updateValue() + 204 in SwiftUICore
+ 18 0x00000002379dc620 DynamicBody.updateValue() + 1184 in SwiftUICore
+ 19 0x00000001c16b1554 AG::Graph::UpdateStack::update() + 500 in AttributeGraph
+ 20 0x00000001c16c1230 AG::Subgraph::update(unsigned int) + 960 in AttributeGraph
+ 21 0x0000000237c7a8f8 specialized GraphHost.runTransaction(_:do:id:) + 388 in SwiftUICore
+ 22 0x0000000237c5d6a4 GraphHost.flushTransactions() + 184 in SwiftUICore
+ 23 0x00000002381133fc closure #1 in ViewGraphRootValueUpdater.render(interval:updateDisplayList:targetTimestamp:) + 424 in SwiftUICore
+ 24 0x00000002381117a4 ViewGraphRootValueUpdater.render(interval:updateDisplayList:targetTimestamp:) + 528 in SwiftUICore
+ 25 0x00000001c07daf38 closure #1 in NSHostingView.layout() + 520 in SwiftUI
+ 26 0x00000001c07f7088 <deduplicated_symbol> + 28 in SwiftUI
+ 27 0x00000001c07d4e78 <deduplicated_symbol> + 44 in SwiftUI
+ 28 0x000000019121a87c +[NSAnimationContext runAnimationGroup:] + 56 in AppKit
+ 29 0x00000001c07dac78 NSHostingView.layout() + 504 in SwiftUI
+ 30 0x00000001907a1f40 <unknown> + 28 in AppKit
+ 31 0x00000001907a1f68 <unknown> + 28 in AppKit
+ 32 0x00000001907653a8 <unknown> + 1472 in AppKit
+ 33 0x00000001907659c0 <unknown> + 28 in AppKit
+ 34 0x00000001910f9c44 ___NSViewLayout_block_invoke + 624 in AppKit
+ 35 0x000000019044ca10 NSPerformVisuallyAtomicChange + 108 in AppKit
+ 36 0x000000019044e134 _NSViewLayout + 96 in AppKit
+ 37 0x00000001910e96b4 __36-[NSView _layoutSubtreeWithOldSize:]_block_invoke + 372 in AppKit
+ 38 0x000000019044ca10 NSPerformVisuallyAtomicChange + 108 in AppKit
+ 39 0x00000001910e9534 -[NSView _layoutSubtreeWithOldSize:] + 100 in AppKit
+ 40 0x00000001910e97ec __36-[NSView _layoutSubtreeWithOldSize:]_block_invoke + 684 in AppKit
+ 41 0x000000019044ca10 NSPerformVisuallyAtomicChange + 108 in AppKit
+ 42 0x00000001910e9534 -[NSView _layoutSubtreeWithOldSize:] + 100 in AppKit
+...
+ 81 0x0000000253b46524 <unknown> + 4424 in Gestures
+ 82 0x0000000253b76360 <unknown> + 180 in Gestures
+ 83 0x000000019128ab9c -[_NSGFGestureEnvironment _routeMouseEventToActiveGestureRecognizers:] + 316 in AppKit
+ 84 0x00000001909413e8 -[_NSGestureEnvironmentBase _sendMouseEventToGestureRecognizers:requireAcceptsFirstMouse:] + 376 in AppKit
+ 85 0x0000000190942778 -[_NSGestureEnvironmentBase sendEventToGestureRecognizers:requireAcceptsFirstMouse:] + 88 in AppKit
+ 86 0x00000001911bc07c -[NSWindow(NSEventRouting) sendEvent:] + 308 in AppKit
+ 87 0x0000000190ef4860 -[NSApplication(NSEventRouting) sendEvent:] + 1276 in AppKit
+ 88 0x000000019098c6f4 -[NSApplication _handleEvent:] + 60 in AppKit
+ 89 0x00000001904237a8 -[NSApplication run] + 408 in AppKit
+ 90 0x000000019040f6dc NSApplicationMain + 880 in AppKit
+ 91 0x00000001c006e3ec specialized runApp(_:) + 168 in SwiftUI
+ 92 0x00000001c0427b40 runApp<A>(_:) + 112 in SwiftUI
+ 93 0x00000001c06f21d8 static App.main() + 224 in SwiftUI
+...

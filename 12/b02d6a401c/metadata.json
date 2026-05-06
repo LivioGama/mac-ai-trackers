@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "12b02d6a401c",
+  "strategy": "manual-commit",
+  "branch": "fix-segment-deletion-crash",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/App/Views/Settings/MenubarHintSettingsView.swift",
+    "AIUsagesTrackers/Sources/App/Views/Settings/SegmentCardView.swift",
+    "AIUsagesTrackers/Sources/App/Views/Settings/SegmentEditor.swift"
+  ],
+  "sessions": [
+    {
+      "metadata": "/12/b02d6a401c/0/metadata.json",
+      "transcript": "/12/b02d6a401c/0/full.jsonl",
+      "content_hash": "/12/b02d6a401c/0/content_hash.txt",
+      "prompt": "/12/b02d6a401c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 48,
+    "cache_creation_tokens": 67859,
+    "cache_read_tokens": 851871,
+    "output_tokens": 5796,
+    "api_call_count": 17
+  }
+}
