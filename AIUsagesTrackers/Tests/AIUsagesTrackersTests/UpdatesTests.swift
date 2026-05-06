@@ -185,6 +185,16 @@ private struct StubProcessRunner: ProcessRunning {
     }
 }
 
+/// Returns different stdouts depending on the executed binary — used to model
+/// "shell returns brew path, brew returns caskroom" in a single runner.
+private struct RoutingProcessRunner: ProcessRunning {
+    let route: @Sendable (String, [String]) -> (stdout: String, exit: Int32)
+    func run(executablePath: String, arguments: [String], timeoutSeconds: Int) async throws -> ProcessExecutionResult {
+        let result = route(executablePath, arguments)
+        return ProcessExecutionResult(stdout: Data(result.stdout.utf8), terminationStatus: result.exit, timedOut: false)
+    }
+}
+
 private struct ThrowingProcessRunner: ProcessRunning {
     func run(executablePath: String, arguments: [String], timeoutSeconds: Int) async throws -> ProcessExecutionResult {
         throw NSError(domain: "test", code: -1)
@@ -199,10 +209,68 @@ struct InstallationDetectorTests {
             bundlePath: "/Applications/Foo.app",
             process: StubProcessRunner(stdout: "", exit: 0),
             homebrewBinaryPaths: ["/no/such/path"],
-            pathEnvironment: nil
+            pathEnvironment: nil,
+            loginShellPath: nil
         )
         let info = await detector.detect()
         #expect(info.kind == .manual)
+    }
+
+    @Test("discovers brew via login shell when not in standard paths or PATH")
+    func brewViaLoginShell() async throws {
+        let tmp = NSTemporaryDirectory() + "brew-\(UUID().uuidString)"
+        try FileManager.default.createDirectory(atPath: tmp, withIntermediateDirectories: true)
+        let fakeBrew = tmp + "/brew"
+        FileManager.default.createFile(atPath: fakeBrew, contents: Data())
+        let fakeShell = tmp + "/zsh"
+        FileManager.default.createFile(atPath: fakeShell, contents: Data())
+        let caskroom = "\(tmp)/Caskroom"
+        try FileManager.default.createDirectory(atPath: "\(caskroom)/ai-usages-tracker/1.2.3", withIntermediateDirectories: true)
+
+        let runner = RoutingProcessRunner { exe, args in
+            if exe == fakeShell, args == ["-l", "-c", "command -v brew"] {
+                return (fakeBrew + "\n", 0)
+            }
+            if exe == fakeBrew, args == ["--caskroom"] {
+                return (caskroom + "\n", 0)
+            }
+            return ("", 1)
+        }
+        let detector = InstallationDetector(
+            bundlePath: "/Applications/AI Usages Tracker.app",
+            process: runner,
+            homebrewBinaryPaths: [],
+            pathEnvironment: nil,
+            loginShellPath: fakeShell
+        )
+        let info = await detector.detect()
+        #expect(info.kind == .homebrewCask)
+        #expect(await detector.brewExecutablePath() == fakeBrew)
+    }
+
+    @Test("ignores noisy login shell output when discovering brew")
+    func brewViaNoisyLoginShell() async throws {
+        let tmp = NSTemporaryDirectory() + "brew-\(UUID().uuidString)"
+        try FileManager.default.createDirectory(atPath: tmp, withIntermediateDirectories: true)
+        let fakeBrew = tmp + "/brew"
+        FileManager.default.createFile(atPath: fakeBrew, contents: Data())
+        let fakeShell = tmp + "/zsh"
+        FileManager.default.createFile(atPath: fakeShell, contents: Data())
+
+        let runner = RoutingProcessRunner { exe, args in
+            if exe == fakeShell, args == ["-l", "-c", "command -v brew"] {
+                return ("loading profile\n\(fakeBrew)\nprofile done\n", 0)
+            }
+            return ("", 1)
+        }
+        let detector = InstallationDetector(
+            bundlePath: "/Applications/AI Usages Tracker.app",
+            process: runner,
+            homebrewBinaryPaths: [],
+            pathEnvironment: nil,
+            loginShellPath: fakeShell
+        )
+        #expect(await detector.brewExecutablePath() == fakeBrew)
     }
 
     @Test("returns homebrewCask when caskroom contains the cask directory")

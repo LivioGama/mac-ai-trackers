@@ -26,6 +26,7 @@ public actor InstallationDetector {
     private let fileManager: FileManager
     private let homebrewBinaryPaths: [String]
     private let pathEnvironment: String?
+    private let loginShellPath: String?
 
     public static let homebrewCaskName = "ai-usages-tracker"
 
@@ -34,17 +35,19 @@ public actor InstallationDetector {
         process: ProcessRunning = FoundationProcessRunner(),
         fileManager: FileManager = .default,
         homebrewBinaryPaths: [String] = ["/opt/homebrew/bin/brew", "/usr/local/bin/brew"],
-        pathEnvironment: String? = ProcessInfo.processInfo.environment["PATH"]
+        pathEnvironment: String? = ProcessInfo.processInfo.environment["PATH"],
+        loginShellPath: String? = ProcessInfo.processInfo.environment["SHELL"]
     ) {
         self.bundlePath = bundlePath
         self.process = process
         self.fileManager = fileManager
         self.homebrewBinaryPaths = homebrewBinaryPaths
         self.pathEnvironment = pathEnvironment
+        self.loginShellPath = loginShellPath
     }
 
     public func detect() async -> InstallationInfo {
-        guard let brewPath = firstExistingBrewPath() else {
+        guard let brewPath = await resolveBrewPath() else {
             return InstallationInfo(kind: .manual, bundlePath: bundlePath)
         }
         // `brew --caskroom` returns the directory containing per-cask folders.
@@ -81,9 +84,20 @@ public actor InstallationDetector {
     }
 
     /// Exposed for the installer — returns the path of an existing brew binary
-    /// or nil if Homebrew is not installed at the expected locations.
-    public func brewExecutablePath() -> String? {
-        firstExistingBrewPath()
+    /// or nil if Homebrew cannot be found through any discovery method.
+    public func brewExecutablePath() async -> String? {
+        await resolveBrewPath()
+    }
+
+    /// Resolves the brew binary path by trying, in order:
+    /// 1. Hardcoded standard install paths (`/opt/homebrew/bin/brew`, `/usr/local/bin/brew`).
+    /// 2. The inherited `PATH` environment.
+    /// 3. The user's login shell — GUI apps launched via Finder/Dock inherit a
+    ///    minimal `PATH` that misses Homebrew when it lives outside the
+    ///    standard locations (e.g. `~/tools/homebrew`).
+    private func resolveBrewPath() async -> String? {
+        if let direct = firstExistingBrewPath() { return direct }
+        return await brewPathViaLoginShell()
     }
 
     private func firstExistingBrewPath() -> String? {
@@ -95,4 +109,28 @@ public actor InstallationDetector {
         return (homebrewBinaryPaths + pathBrewCandidates).first { fileManager.fileExists(atPath: $0) }
     }
 
+    private func brewPathViaLoginShell() async -> String? {
+        guard let shell = loginShellPath, !shell.isEmpty, fileManager.fileExists(atPath: shell) else {
+            return nil
+        }
+        // `-l -c "command -v brew"` runs the user's login shell so that profile
+        // files (e.g. `.zprofile` setting up `eval "$(brew shellenv)"`) extend
+        // PATH. Login shells can be slow when users have heavy rc files, hence
+        // a generous timeout.
+        do {
+            let result = try await process.run(
+                executablePath: shell,
+                arguments: ["-l", "-c", "command -v brew"],
+                timeoutSeconds: 10
+            )
+            guard result.terminationStatus == 0, !result.timedOut else { return nil }
+            let lines = String(decoding: result.stdout, as: UTF8.self)
+                .split(whereSeparator: \.isNewline)
+                .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            return lines.reversed().first { fileManager.fileExists(atPath: $0) }
+        } catch {
+            return nil
+        }
+    }
 }
