@@ -1,0 +1,78 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "b6391175c2cd",
+  "session_id": "626f953f-6273-42c3-a853-502e8dfe910f",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-06T23:48:19.008786Z",
+  "branch": "industrialize-new-assistant",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "roadmap/index.md",
+    "roadmap/new-assistant-onboarding-workflow.plan.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "8542eff4b03c",
+  "token_usage": {
+    "input_tokens": 36,
+    "cache_creation_tokens": 90174,
+    "cache_read_tokens": 905813,
+    "output_tokens": 8578,
+    "api_call_count": 16
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-06T23:48:18.724818Z",
+    "agent_lines": 23,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 1,
+    "total_committed": 23,
+    "total_lines_changed": 24,
+    "agent_percentage": 95.83333333333334,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 2019,
+      "user_lines_removed": 1,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/attachments/Review request-v1.md": 92,
+        ".context/attachments/Review request-v2.md": 92,
+        ".context/attachments/Review request-v3.md": 92,
+        ".context/attachments/Review request-v4.md": 92,
+        ".context/attachments/Review request-v5.md": 92,
+        ".context/attachments/Review request.md": 92,
+        "roadmap/index.md": 6,
+        "roadmap/new-assistant-onboarding-workflow.md": 73,
+        "roadmap/new-assistant-onboarding-workflow.plan.md": 1055,
+        "roadmap/vendor-plugin-framework.md": 42,
+        "roadmap/vendor-plugin-framework.plan.md": 291
+      },
+      "user_removed_per_file": {
+        "roadmap/index.md": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 552,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1467,
+      "agent_lines_removed": 1,
+      "user_added_per_file": {
+        ".context/attachments/Review request-v1.md": 92,
+        ".context/attachments/Review request-v2.md": 92,
+        ".context/attachments/Review request-v3.md": 92,
+        ".context/attachments/Review request-v4.md": 92,
+        ".context/attachments/Review request-v5.md": 92,
+        ".context/attachments/Review request.md": 92
+      }
+    }
+  ]
+}
