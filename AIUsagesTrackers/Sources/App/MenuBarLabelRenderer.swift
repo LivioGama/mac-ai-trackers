@@ -20,20 +20,22 @@ enum MenuBarLabelRenderer {
         separator: String,
         fallbackText: String,
         isDarkMenuBar: Bool,
-        isUnconfigured: Bool = false
+        isUnconfigured: Bool = false,
+        outageWarningPrefix: String? = nil
     ) -> NSImage {
         let textColor: NSColor = isDarkMenuBar ? .white : .black
-        let attributed: NSAttributedString
+        let main: NSAttributedString
         if isUnconfigured && segments.isEmpty {
-            attributed = unconfiguredAttributedString(textColor: textColor)
+            main = unconfiguredAttributedString(textColor: textColor)
         } else {
-            attributed = attributedString(
+            main = attributedString(
                 segments: segments,
                 separator: separator,
                 fallbackText: fallbackText,
                 textColor: textColor
             )
         }
+        let attributed = prefixed(main, prefix: outageWarningPrefix, textColor: textColor)
         let textSize = attributed.size()
         let width = ceil(textSize.width) + horizontalPadding * 2
         let size = NSSize(width: max(width, 1), height: height)
@@ -44,6 +46,21 @@ enum MenuBarLabelRenderer {
         image.unlockFocus()
         image.isTemplate = false
         return image
+    }
+
+    private static func prefixed(
+        _ main: NSAttributedString,
+        prefix: String?,
+        textColor: NSColor
+    ) -> NSAttributedString {
+        guard let prefix, !prefix.isEmpty else { return main }
+        let combined = NSMutableAttributedString()
+        combined.append(NSAttributedString(
+            string: prefix + " ",
+            attributes: [.font: font, .foregroundColor: textColor]
+        ))
+        combined.append(main)
+        return combined
     }
 
     private static func unconfiguredAttributedString(textColor: NSColor) -> NSAttributedString {
