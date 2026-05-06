@@ -1,0 +1,101 @@
+<system_instruction>
+You are working inside Conductor, a Mac app that lets the user run many coding agents in parallel.
+Your work should take place in the /Users/fcamblor/conductor/workspaces/mac-ai-trackers/santo-domingo directory (unless otherwise directed), which has been set up for you to work in.
+Each workspace has a .context directory (gitignored) where you can save files to collaborate with other agents.
+The target branch for this workspace is origin/main. Use this for actions like diffing (`git diff origin/main...`) or creating PRs (`gh pr create --base main`).
+
+Do not rename the current branch unless the user explicitly tells you to do so.
+
+By default, the user will only see the last message that you send before stopping. Include all essential information in the last message. The intermediate messages will be collapsed and accessible by the user but not displayed by default.
+
+If the user asks you to work on several unrelated tasks, you can suggest they start new workspaces.
+Sometimes the user might send you a message they meant to send in a different workspace or a different chat. If something doesn't make sense in the context of your work, just ask. 
+If the user asks for help with Conductor, you can ask them to go to "Help -> Send Feedback" to get in touch with our team.
+</system_instruction>
+
+J'aimerais qu'on se place à niveau un peu plus meta sur le projet, pour permettre d'industrialiser le fait d'ajouter de nouvelles implémentations d'AI Assistants sur le projet.
+S'inspirer notamment de la branche récente qui introduit copilot (copilot-cli-usage-api-research)
+
+Les sujets que j'aimerais qu'on traite (il faut peut-être faire 1 fichier plan par problématique car il y a de la recherche profonde à faire dessus à chaque fois) :
+1/ comment faire en sorte de "plugin-ifier" la codebase : fournir un cadre a toutes les problématiques/contrats que doivent implémenter un nouvel assistant sur le projet (récupération de l'auth, récupération des stats d'usage, conversion dans le format "standard" persisté (usages.json), configuration de l'icone de l'assistant, hypothèses et recherches documentaires sur les appels d'APIs, documentation claire des APIs appelées et des différents cas de payloads retournées (time windows, pay as you go, per-request...) etc..)
+
+2/ créer un skill ou des guidelines pour guider un LLM sur l'implémentation qui suit ce cadre, puis formatlise le workflow à suivre au sein d'une PR :
+- ouverture d'une PR
+- review de cette dernière, s'assurer que la documentation est claire sur le support de l'assistant
+- génération d'un build nightly avec le nouvel assistant et attachment de ce build sur la PR (+ guidelines sur comment reconstruire facilement ce build nightly pour les gens qui ne trusteraient pas le dmg fourni)
+- attente de testeurs qui ont un abonnement pour le nouvel assistant, et qui permettent de donner du feedback sur l'implémentation avec leur abonnement propre
+- une fois qu'on a 2-3 personnes qui ont ✅ l'implémentation, on merge la PR et on officialise le support de l'assistant en question
+
+---
+
+quelques remarques
+
+# epic 1
+
+OK avec tout ce que tu dis
+Dans le <vendor>.md il est absolument crucial de mettre l'accent sur la documentation de comment les choses se passent à une date donnée (il faut dater ce fichier) car ça sera un point très important pour comparer, quelques mois plus tard, si on détecte un changement dans l'API, comment les choses ont pu évoluer (et quels sont donc les impacts)
+
+# epic 2
+
+il faut mettre l'accent sur la temporalité sur ce skill. Car toutes les étapes vont se dérouler dans une fenêtre de temps plus ou moins longue (plusieurs jours)
+=> ce n'est pas dans un seul prompt que tout ça va se jouer
+
+Il faut peut-être prévoir plusieurs skills (ou un meta skill qui se repose sur plusieurs "sub skills") pour pouvoir invoquer le bon skill lorsqu'un évènement survient dans le process.
+
+# tes questions
+
+- 2 testeurs mini
+- DMG uniquement. Le zip ne sert à rien, il faut plutôt pointer sur une doc qui permette de cloner (ou télécharger) les sources d'une branche donnée + les builder en local + les run
+- je vois pas l'intéret du script sh de scaffold ... pour moi faut faire un skill pour aider à implémenter (et à dérouler toutes les autres étapes de l'epic 2)
+- je n'ai pas tous les tenants et aboutissant par rapport au VendorAuthProviding. Explicite. Ce qui est important, c'est que ce soit compatible avec les 3 impléms d'assistants actuellement supportés (claude code, codex et copilot) et je pense que ce n'est pas à l'app de gérer les credentials (et leur securisation). Le job de l'app, c'est uniquement de fournir des connecteurs pour récupérer les credentials là où ils se trouvent.
+
+---
+
+je me demandais pour l'Épic 2 ... est-ce qu'on ne pourrait pas faire un type d'issue dédié dans github pour l'ajout d'un nouvel assistant + un workflow spécifique qui cadre bien toutes les étapes (seul le mainteneur peut faire progresser le workflow à chaque gate)
+
+---
+
+oui refactor le plan de l'epic 2 d'ores et déjà avec tous ces éléments, c'est suffisant
+
+Question: doit-on créer un type d'issue dédié dans github ?
+
+---
+
+pendant le signoff des testeurs, ce serait bien que les builds nightly générés aient un niveau de log spécial qui permette de logger au niveau le plus bas possible tout ce qui se passe avec le vendor (et notamment le contenu des payloads échangées, en prenant soin de ne pas logger d'informations confidentielles dedans comme une API key ou autre)
+
+L'objectif : lors des tests (et même au moment du signoff) il serait intéressant que les testeurs partagent ces logs de manière à faciliter le debug de l'implémentation du vendor
+
+Je te laisse mettre à jour les fichiers concernés avec ces paticularitws
+
+---
+
+reprends là où tu en étais
++ réponds à ma question : dans les markdown, tu fais pusieurs fois référence à une "PDF mark" : qu'est-ce que c'est je ne comprends pas
+
+---
+
+reprends là où tu en étais
+
+---
+
+un détail : il faudrait que le sha1 de commit soit tracé un peu partout (dans le nom du dmg attaché, et puis aussi dans le commentaire du testeur)
+
+Encore mieux: si on pouvait avoir un mode "in-app" qui permettait directement de publier un feedback sur l'issue qui va bien (fait parti du build nightly) ce serait encore 1000 fois mieux)
+
+---
+
+encore un point à traiter dans la réflexion : on doit pouvoir utiliser le workflow dans le cas où l'API d'un vendor existant évolue (il faut l'enrichir ou, même pire, elle devient backward incompatible et donc il faut sortir une nouvelle version de l'app)
+
+Les skills/workflows doivent pouvoir prendre en compte une évol, et pas juste la création d'un nouveau vendor
+
+---
+
+j'ai les retours de review suivants qui ont été remontés :
+
+#1 Incohérence dans la table de cycle de vie des phase:*
+La colonne “Owning skill” du tableau §1 attribue phase:review à assistant-implement et phase:testing à assistant-review, alors que les sections §2.4–2.5 et les en-têtes des skills §3.3 (“Owns phase 2.4”) / §3.4 (“Owns phase 2.5”) disent l’inverse. Le meta-router (§3.0) ne peut pas router sans mapping cohérent.
+
+Autres observations (non bloquantes, non postées)
+Les fichiers roadmap/*.plan.md sont exempts des règles “write for longevity”, donc les dates explicites (2026-05-06, _TEMPLATE.md daté, etc.) sont acceptables ici.
+L’index roadmap/index.md corrige au passage un 1\planned`malformé en1. `planned“ — bonne occasion.
+Le name: du workflow assistant-build.yml est encore “New-assistant nightly build” alors qu’il couvre aussi type:vendor-evolution ; cosmétique et probablement intentionnel à ce stade de plan.
