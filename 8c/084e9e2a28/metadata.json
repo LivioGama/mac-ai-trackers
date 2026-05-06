@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "8c084e9e2a28",
+  "strategy": "manual-commit",
+  "branch": "menubar-outage-indicator",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Preferences/AppPreferenceKeys.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Preferences/AppPreferences.swift",
+    "AIUsagesTrackers/Sources/App/AppDelegate.swift",
+    "AIUsagesTrackers/Sources/App/MenuBarLabelRenderer.swift",
+    "AIUsagesTrackers/Sources/App/Views/Settings/MenubarHintSettingsView.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/AppPreferencesTests.swift"
+  ],
+  "sessions": [
+    {
+      "metadata": "/8c/084e9e2a28/0/metadata.json",
+      "transcript": "/8c/084e9e2a28/0/full.jsonl",
+      "content_hash": "/8c/084e9e2a28/0/content_hash.txt",
+      "prompt": "/8c/084e9e2a28/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 66,
+    "cache_creation_tokens": 189988,
+    "cache_read_tokens": 2417736,
+    "output_tokens": 15722,
+    "api_call_count": 41
+  }
+}
