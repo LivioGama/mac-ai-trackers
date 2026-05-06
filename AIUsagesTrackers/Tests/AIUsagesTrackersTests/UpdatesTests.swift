@@ -294,6 +294,44 @@ struct InstallationDetectorTests {
         #expect(info.kind == .homebrewCask)
     }
 
+    @Test("returns homebrewCask when the running bundle is in the user Applications directory")
+    func brewMatchInUserApplications() async throws {
+        let tmp = NSTemporaryDirectory() + "brew-\(UUID().uuidString)"
+        try FileManager.default.createDirectory(atPath: tmp, withIntermediateDirectories: true)
+        let fakeBrew = tmp + "/brew"
+        FileManager.default.createFile(atPath: fakeBrew, contents: Data())
+
+        let caskroom = "\(tmp)/Caskroom"
+        try FileManager.default.createDirectory(atPath: "\(caskroom)/ai-usages-tracker/1.2.3", withIntermediateDirectories: true)
+        let detector = InstallationDetector(
+            bundlePath: InstallationDetector.homebrewUserBundlePath,
+            process: StubProcessRunner(stdout: caskroom + "\n", exit: 0),
+            homebrewBinaryPaths: [fakeBrew],
+            pathEnvironment: nil
+        )
+        let info = await detector.detect()
+        #expect(info.kind == .homebrewCask)
+    }
+
+    @Test("returns manual when cask is installed but the running bundle is a manual copy")
+    func installedCaskWithManualBundleCopy() async throws {
+        let tmp = NSTemporaryDirectory() + "brew-\(UUID().uuidString)"
+        try FileManager.default.createDirectory(atPath: tmp, withIntermediateDirectories: true)
+        let fakeBrew = tmp + "/brew"
+        FileManager.default.createFile(atPath: fakeBrew, contents: Data())
+
+        let caskroom = "\(tmp)/Caskroom"
+        try FileManager.default.createDirectory(atPath: "\(caskroom)/ai-usages-tracker/1.2.3", withIntermediateDirectories: true)
+        let detector = InstallationDetector(
+            bundlePath: "\(tmp)/Downloads/AI Usages Tracker.app",
+            process: StubProcessRunner(stdout: caskroom + "\n", exit: 0),
+            homebrewBinaryPaths: [fakeBrew],
+            pathEnvironment: nil
+        )
+        let info = await detector.detect()
+        #expect(info.kind == .manual)
+    }
+
     @Test("returns homebrewCask when brew is found through PATH")
     func brewFromPath() async throws {
         let tmp = NSTemporaryDirectory() + "brew-\(UUID().uuidString)"

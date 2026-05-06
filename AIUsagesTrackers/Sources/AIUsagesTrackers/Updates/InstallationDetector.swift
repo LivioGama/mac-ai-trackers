@@ -29,6 +29,10 @@ public actor InstallationDetector {
     private let loginShellPath: String?
 
     public static let homebrewCaskName = "ai-usages-tracker"
+    public static let homebrewBundlePath = "/Applications/AI Usages Tracker.app"
+    public static let homebrewUserBundlePath = FileManager.default.homeDirectoryForCurrentUser
+        .appendingPathComponent("Applications/AI Usages Tracker.app")
+        .path
 
     public init(
         bundlePath: String,
@@ -52,9 +56,10 @@ public actor InstallationDetector {
         }
         // `brew --caskroom` returns the directory containing per-cask folders.
         // The `app` cask stanza copies the .app into /Applications rather than
-        // symlinking it, so the running bundle path can't confirm provenance.
-        // Instead, the existence of `<caskroom>/<name>` as a directory is the
-        // canonical signal that the cask is installed on this machine.
+        // symlinking it, so the running bundle path can't be compared with the
+        // caskroom subtree. We still require the running bundle to be the app at
+        // Homebrew's global or user appdir: otherwise a manual/dev copy would
+        // be misclassified whenever the cask is also installed on the machine.
         let caskroom: String
         do {
             let result = try await process.run(
@@ -77,7 +82,9 @@ public actor InstallationDetector {
 
         let caskDir = caskroom.hasSuffix("/") ? "\(caskroom)\(Self.homebrewCaskName)" : "\(caskroom)/\(Self.homebrewCaskName)"
         var isDirectory: ObjCBool = false
-        if fileManager.fileExists(atPath: caskDir, isDirectory: &isDirectory), isDirectory.boolValue {
+        if isExpectedHomebrewBundlePath(bundlePath),
+           fileManager.fileExists(atPath: caskDir, isDirectory: &isDirectory),
+           isDirectory.boolValue {
             return InstallationInfo(kind: .homebrewCask, bundlePath: bundlePath)
         }
         return InstallationInfo(kind: .manual, bundlePath: bundlePath)
@@ -107,6 +114,11 @@ public actor InstallationDetector {
             .filter { !$0.isEmpty }
             .map { URL(fileURLWithPath: $0).appendingPathComponent("brew").path }
         return (homebrewBinaryPaths + pathBrewCandidates).first { fileManager.fileExists(atPath: $0) }
+    }
+
+    private func isExpectedHomebrewBundlePath(_ path: String) -> Bool {
+        let standardized = URL(fileURLWithPath: path).standardizedFileURL.path
+        return standardized == Self.homebrewBundlePath || standardized == Self.homebrewUserBundlePath
     }
 
     private func brewPathViaLoginShell() async -> String? {
