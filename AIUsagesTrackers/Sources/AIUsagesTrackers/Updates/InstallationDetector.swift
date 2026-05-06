@@ -125,14 +125,18 @@ public actor InstallationDetector {
         guard let shell = loginShellPath, !shell.isEmpty, fileManager.fileExists(atPath: shell) else {
             return nil
         }
-        // `-l -c "command -v brew"` runs the user's login shell so that profile
-        // files (e.g. `.zprofile` setting up `eval "$(brew shellenv)"`) extend
-        // PATH. Login shells can be slow when users have heavy rc files, hence
-        // a generous timeout.
+        // `-l -i -c "command -v brew"` runs the user's shell as both login AND
+        // interactive so every init file gets sourced: `.zshenv`/`.zprofile`
+        // (login) plus `.zshrc` (interactive). Many users put their Homebrew
+        // PATH setup (`eval "$(brew shellenv)"` or a manual `export PATH=...`)
+        // in `.zshrc`, which a login-only non-interactive shell does NOT
+        // source. Without `-i` we'd miss those setups and incorrectly fall
+        // back to a Manual install classification. Interactive shells can be
+        // slow when users have heavy rc files, hence a generous timeout.
         do {
             let result = try await process.run(
                 executablePath: shell,
-                arguments: ["-l", "-c", "command -v brew"],
+                arguments: ["-l", "-i", "-c", "command -v brew"],
                 timeoutSeconds: 10
             )
             guard result.terminationStatus == 0, !result.timedOut else { return nil }

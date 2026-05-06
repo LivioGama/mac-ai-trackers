@@ -228,7 +228,7 @@ struct InstallationDetectorTests {
         try FileManager.default.createDirectory(atPath: "\(caskroom)/ai-usages-tracker/1.2.3", withIntermediateDirectories: true)
 
         let runner = RoutingProcessRunner { exe, args in
-            if exe == fakeShell, args == ["-l", "-c", "command -v brew"] {
+            if exe == fakeShell, args == ["-l", "-i", "-c", "command -v brew"] {
                 return (fakeBrew + "\n", 0)
             }
             if exe == fakeBrew, args == ["--caskroom"] {
@@ -258,7 +258,7 @@ struct InstallationDetectorTests {
         FileManager.default.createFile(atPath: fakeShell, contents: Data())
 
         let runner = RoutingProcessRunner { exe, args in
-            if exe == fakeShell, args == ["-l", "-c", "command -v brew"] {
+            if exe == fakeShell, args == ["-l", "-i", "-c", "command -v brew"] {
                 return ("loading profile\n\(fakeBrew)\nprofile done\n", 0)
             }
             return ("", 1)
