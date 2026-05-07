@@ -8,7 +8,7 @@ name: Assistant change nightly build
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
+    types: [opened, reopened, synchronize, ready_for_review, closed]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -24,9 +24,13 @@ permissions:
   pull-requests: write
   issues: write
 
+# The build job overrides `contents` to `write` because it publishes a
+# prerelease with the DMG attached. We keep the top-level permission at
+# `read` so resolve-issue runs with least privilege.
+
 jobs:
   resolve-issue:
-    if: github.event.pull_request.draft != true
+    if: github.event.action != 'closed' && github.event.pull_request.draft != true
     runs-on: ubuntu-latest
     outputs:
       in_scope: ${{ steps.detect.outputs.in_scope }}
@@ -109,6 +113,10 @@ jobs:
     if: needs.resolve-issue.outputs.in_scope == 'true'
     runs-on: macos-15
     timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
     steps:
       - name: Checkout PR head
         uses: actions/checkout@v4
@@ -175,29 +183,67 @@ jobs:
           [ "$got_issue"  = "$EXPECTED_ISSUE" ]  || { echo "AITrackerOnboardingIssueURL mismatch"; exit 1; }
           echo "✓ Info.plist tester-debug keys present and correct"
 
-      - name: Upload DMG as workflow artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: AI-Usages-Tracker-${{ needs.resolve-issue.outputs.vendor_slug }}-${{ needs.resolve-issue.outputs.head_sha_short }}
-          path: |
-            dist/AI-Usages-Tracker-${{ needs.resolve-issue.outputs.vendor_slug }}-${{ needs.resolve-issue.outputs.head_sha_short }}.dmg
-            dist/AI-Usages-Tracker-${{ needs.resolve-issue.outputs.vendor_slug }}-${{ needs.resolve-issue.outputs.head_sha_short }}.dmg.sha256
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Compute artefact pointers
+      - name: Publish DMG as PR prerelease
         id: pointer
+        # Workflow artifacts are always zipped by GitHub and only downloadable
+        # via the Actions UI when logged in — neither acceptable for testers.
+        # A GitHub Release exposes the .dmg as a direct, public, unzipped
+        # asset. We mark it `prerelease: true` so the in-app update checker
+        # (which queries /releases/latest, an endpoint that excludes
+        # prereleases by design) cannot mistake it for a stable build.
         env:
-          DMG_FILE: dist/AI-Usages-Tracker-${{ needs.resolve-issue.outputs.vendor_slug }}-${{ needs.resolve-issue.outputs.head_sha_short }}.dmg
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.run_id }}
+          PR: ${{ needs.resolve-issue.outputs.pr_number }}
+          VENDOR: ${{ needs.resolve-issue.outputs.vendor_slug }}
+          SHORT: ${{ needs.resolve-issue.outputs.head_sha_short }}
+          SHA: ${{ needs.resolve-issue.outputs.head_sha }}
+          DMG_FILE: dist/AI-Usages-Tracker-${{ needs.resolve-issue.outputs.vendor_slug }}-${{ needs.resolve-issue.outputs.head_sha_short }}.dmg
         run: |
           set -euo pipefail
+          TAG="assistant-build-pr${PR}-${VENDOR}-${SHORT}"
+          DMG_BASENAME=$(basename "$DMG_FILE")
           sha256=$(awk '{print $1}' < "${DMG_FILE}.sha256")
-          download_url="https://github.com/${REPO}/actions/runs/${RUN_ID}#artifacts"
+
+          # Sweep stale builds for this PR. A new commit invalidates older
+          # tester sign-offs anyway (they pin the build SHA), so leaving
+          # outdated DMGs around only confuses testers and pollutes the
+          # Releases page. Same-PR previous builds match the pr<N>- prefix.
+          stale_tags=$(gh release list --limit 100 --json tagName \
+            --jq ".[] | select(.tagName | startswith(\"assistant-build-pr${PR}-\")) | .tagName")
+          while IFS= read -r old_tag; do
+            [ -z "$old_tag" ] && continue
+            [ "$old_tag" = "$TAG" ] && continue
+            echo "Deleting stale release ${old_tag}"
+            gh release delete "$old_tag" --cleanup-tag --yes || true
+          done <<< "$stale_tags"
+
+          notes_lines=(
+            "Tester DMG built from PR #${PR} at commit \`${SHA}\`."
+            "Vendor-debug enabled for \`${VENDOR}\`."
+            ""
+            "**This release is marked prerelease.** The in-app update checker"
+            "queries the GitHub \`/releases/latest\` endpoint, which excludes"
+            "prereleases by design — stable installs will never offer this DMG"
+            "as an upgrade."
+          )
+          notes=$(printf '%s\n' "${notes_lines[@]}")
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${DMG_FILE}" "${DMG_FILE}.sha256" --clobber
+          else
+            gh release create "$TAG" "${DMG_FILE}" "${DMG_FILE}.sha256" \
+              --title "Assistant build PR #${PR} · ${VENDOR} · ${SHORT}" \
+              --notes "${notes}" \
+              --prerelease \
+              --target "${SHA}"
+          fi
+
+          download_url="https://github.com/${REPO}/releases/download/${TAG}/${DMG_BASENAME}"
           {
             echo "sha256=${sha256}"
             echo "download_url=${download_url}"
+            echo "release_tag=${TAG}"
           } >> "$GITHUB_OUTPUT"
 
       - name: Post sticky comment on issue
@@ -287,3 +333,27 @@ jobs:
             gh pr comment "${PR}" --body "$body"
             echo "Posted sticky comment on PR #${PR}"
           fi
+
+  cleanup-on-close:
+    # Sweep all prereleases tagged for this PR when it closes (merged or
+    # not). Without this, every closed PR leaves a dangling tester
+    # prerelease forever.
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Delete PR-scoped prereleases and tags
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          tags=$(gh release list --limit 100 --json tagName \
+            --jq ".[] | select(.tagName | startswith(\"assistant-build-pr${PR}-\")) | .tagName")
+          while IFS= read -r tag; do
+            [ -z "$tag" ] && continue
+            echo "Deleting release ${tag}"
+            gh release delete "$tag" --cleanup-tag --yes --repo "${REPO}" || true
+          done <<< "$tags"

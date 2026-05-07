@@ -401,10 +401,20 @@ carries `type:new-assistant` or `type:vendor-evolution`. It:
    `AITrackerOnboardingIssueURL`.
 4. Packages the `.app` into a DMG named
    `AI-Usages-Tracker-<slug>-<sha8>.dmg`. Computes SHA-256.
-5. Uploads as a workflow artifact.
+5. Publishes it as a **GitHub prerelease** tagged
+   `assistant-build-pr<N>-<slug>-<sha8>`, with the `.dmg` and its
+   `.sha256` attached as direct, public, unzipped assets. Stale
+   prereleases for the same PR (matching prefix `assistant-build-pr<N>-`)
+   are deleted first to keep the Releases page tidy. The `prerelease: true`
+   flag is mandatory: the in-app update checker queries
+   `/releases/latest`, an endpoint that excludes prereleases by design,
+   so stable installs cannot be offered a tester DMG as an upgrade.
 6. Posts (or updates) a sticky comment on **both** the PR (reviewer
    audience) and the linked issue (tester audience), sentinel
-   `<!-- assistant-build:sticky -->`.
+   `<!-- assistant-build:sticky -->`. The download link in the comment is
+   the **direct asset URL**
+   (`/releases/download/<tag>/<file>.dmg`) — one click yields the
+   `.dmg`, no zip wrapping, no GitHub login required.
 
 ### 6.2 Sticky comment shape
 
