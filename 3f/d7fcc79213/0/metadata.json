@@ -1,0 +1,46 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "3fd7fcc79213",
+  "session_id": "ffa52c38-54e9-4525-8ed0-0786ff195d64",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-07T01:06:06.260351Z",
+  "branch": "vendor-plugin-framework",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/CredentialLocator.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeCredentialLocator.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeCodeConnector.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeActiveAccountMonitor.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudePayloadSanitizer.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Plugins/ClaudeCodePlugin.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/Fixtures/claude-full-payload.json",
+    "AIUsagesTrackers/Package.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/LeakageTestHelpers.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/ClaudePayloadSanitizerTests.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Logging/BaseSanitizers.swift"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "271be83e3611",
+  "checkpoint_transcript_start": 496,
+  "transcript_lines_at_start": 496,
+  "token_usage": {
+    "input_tokens": 81,
+    "cache_creation_tokens": 38304,
+    "cache_read_tokens": 8451450,
+    "output_tokens": 25521,
+    "api_call_count": 38
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-07T01:06:05.3067Z",
+    "agent_lines": 451,
+    "agent_removed": 78,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 451,
+    "total_lines_changed": 529,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

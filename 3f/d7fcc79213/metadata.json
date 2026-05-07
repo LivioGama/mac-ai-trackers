@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "3fd7fcc79213",
+  "strategy": "manual-commit",
+  "branch": "vendor-plugin-framework",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "AIUsagesTrackers/Package.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeActiveAccountMonitor.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeCodeConnector.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeCredentialLocator.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudePayloadSanitizer.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/CredentialLocator.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Logging/BaseSanitizers.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Plugins/ClaudeCodePlugin.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/ClaudePayloadSanitizerTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/Fixtures/claude-full-payload.json",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/LeakageTestHelpers.swift"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3f/d7fcc79213/0/metadata.json",
+      "transcript": "/3f/d7fcc79213/0/full.jsonl",
+      "content_hash": "/3f/d7fcc79213/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 81,
+    "cache_creation_tokens": 38304,
+    "cache_read_tokens": 8451450,
+    "output_tokens": 25521,
+    "api_call_count": 38
+  }
+}
