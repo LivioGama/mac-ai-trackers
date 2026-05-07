@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "7cf96c5f52ab",
+  "strategy": "manual-commit",
+  "branch": "vendor-plugin-framework",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/CopilotActiveAccountMonitor.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/CopilotConnector.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/CopilotConstants.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/CopilotCredentialLocator.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/CopilotPayloadSanitizer.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Logging/Logger.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Plugins/CopilotCLIPlugin.swift",
+    "AIUsagesTrackers/Sources/App/AppDelegate.swift",
+    "AIUsagesTrackers/Sources/App/VendorBranding.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/CopilotAuthTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/CopilotConnectorTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/CopilotPayloadSanitizerTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/Fixtures/copilot-full-payload.json",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/VendorRegistryConformanceTests.swift",
+    "docs/VENDOR-PLUGIN-CONTRACT.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/7c/f96c5f52ab/0/metadata.json",
+      "transcript": "/7c/f96c5f52ab/0/full.jsonl",
+      "content_hash": "/7c/f96c5f52ab/0/content_hash.txt",
+      "prompt": "/7c/f96c5f52ab/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 70,
+    "cache_creation_tokens": 201904,
+    "cache_read_tokens": 2475038,
+    "output_tokens": 16128,
+    "api_call_count": 40
+  }
+}
