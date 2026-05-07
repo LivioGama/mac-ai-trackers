@@ -215,34 +215,34 @@ jobs:
         run: |
           set -euo pipefail
           SENTINEL='<!-- assistant-build:sticky -->'
-          body=$(cat <<EOF
-${SENTINEL}
-🛠 Build for commit \`${SHORT}\` — vendor-debug enabled for \`${VENDOR}\`
-
-Full commit: \`${SHA}\`
-PR: #${PR}
-
-- [Download ${DMG_NAME}](${DOWNLOAD_URL}) — SHA-256 \`${DMG_SHA}\`
-
-Builds are ad-hoc signed only. First launch: right-click → Open to bypass Gatekeeper.
-
-### Submitting feedback
-
-**Recommended:** open the app, click the "🧪 Tester feedback" banner in the popover.
-The form pre-fills the build SHA, vendor, and macOS version, and on submit it
-opens this issue in your browser with the comment pre-written + reveals the
-connector log in Finder so you can drag-attach it.
-
-**Manual fallback:** copy the sign-off template from \`docs/ASSISTANT-ONBOARDING.md\`,
-fill it in, attach the log file from \`~/.cache/ai-usages-tracker/${VENDOR}-usages-connector.log\`.
-
-The build sanitizes secrets (tokens, API keys, emails) before writing to the log;
-if you spot anything that looks confidential, flag it in your comment without
-quoting the value — it's a bug we want to fix before merge.
-
-Don't trust this prebuilt DMG? Build it yourself in 5 minutes — see [\`docs/CHECKOUT-AND-BUILD.md\`](https://github.com/${REPO}/blob/main/docs/CHECKOUT-AND-BUILD.md).
-EOF
+          body_lines=(
+            "${SENTINEL}"
+            "🛠 Build for commit \`${SHORT}\` — vendor-debug enabled for \`${VENDOR}\`"
+            ""
+            "Full commit: \`${SHA}\`"
+            "PR: #${PR}"
+            ""
+            "- [Download ${DMG_NAME}](${DOWNLOAD_URL}) — SHA-256 \`${DMG_SHA}\`"
+            ""
+            "Builds are ad-hoc signed only. First launch: right-click → Open to bypass Gatekeeper."
+            ""
+            "### Submitting feedback"
+            ""
+            "**Recommended:** open the app, click the \"🧪 Tester feedback\" banner in the popover."
+            "The form pre-fills the build SHA, vendor, and macOS version, and on submit it"
+            "opens this issue in your browser with the comment pre-written + reveals the"
+            "connector log in Finder so you can drag-attach it."
+            ""
+            "**Manual fallback:** copy the sign-off template from \`docs/ASSISTANT-ONBOARDING.md\`,"
+            "fill it in, attach the log file from \`~/.cache/ai-usages-tracker/${VENDOR}-usages-connector.log\`."
+            ""
+            "The build sanitizes secrets (tokens, API keys, emails) before writing to the log;"
+            "if you spot anything that looks confidential, flag it in your comment without"
+            "quoting the value — it's a bug we want to fix before merge."
+            ""
+            "Don't trust this prebuilt DMG? Build it yourself in 5 minutes — see [\`docs/CHECKOUT-AND-BUILD.md\`](https://github.com/${REPO}/blob/main/docs/CHECKOUT-AND-BUILD.md)."
           )
+          body=$(printf '%s\n' "${body_lines[@]}")
           existing=$(gh api "repos/${REPO}/issues/${ISSUE}/comments" --paginate \
             --jq ".[] | select(.body | startswith(\"${SENTINEL}\")) | .id" | head -n1 || true)
           if [ -n "$existing" ]; then
@@ -267,17 +267,17 @@ EOF
         run: |
           set -euo pipefail
           SENTINEL='<!-- assistant-build:sticky -->'
-          body=$(cat <<EOF
-${SENTINEL}
-🛠 Build for commit \`${SHORT}\` (vendor-debug enabled for \`${VENDOR}\`)
-
-Full commit: \`${SHA}\`
-
-- [Download ${DMG_NAME}](${DOWNLOAD_URL}) — SHA-256 \`${DMG_SHA}\`
-
-For tester instructions see the linked issue.
-EOF
+          body_lines=(
+            "${SENTINEL}"
+            "🛠 Build for commit \`${SHORT}\` (vendor-debug enabled for \`${VENDOR}\`)"
+            ""
+            "Full commit: \`${SHA}\`"
+            ""
+            "- [Download ${DMG_NAME}](${DOWNLOAD_URL}) — SHA-256 \`${DMG_SHA}\`"
+            ""
+            "For tester instructions see the linked issue."
           )
+          body=$(printf '%s\n' "${body_lines[@]}")
           existing=$(gh api "repos/${REPO}/issues/${PR}/comments" --paginate \
             --jq ".[] | select(.body | startswith(\"${SENTINEL}\")) | .id" | head -n1 || true)
           if [ -n "$existing" ]; then
