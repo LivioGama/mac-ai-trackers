@@ -483,9 +483,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         activeInstallBundlePath = bundlePath
 
         activeInstallTask = Task { [weak self] in
-            defer {
-                Task { @MainActor [weak self] in self?.activeInstallTask = nil }
-            }
             do {
                 // Resolve brew at install time too — the user may have just
                 // installed Homebrew since the periodic check.
@@ -532,6 +529,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 let message = String(describing: error)
                 await MainActor.run { Self.sharedUpdateState.setFailed(message) }
             }
+            // Clear the re-entrancy guard synchronously before returning so a
+            // user clicking Retry immediately after a failure isn't dropped.
+            await MainActor.run { self?.activeInstallTask = nil }
         }
     }
 

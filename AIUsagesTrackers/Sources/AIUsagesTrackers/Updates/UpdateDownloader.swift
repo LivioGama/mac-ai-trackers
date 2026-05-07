@@ -120,9 +120,13 @@ public actor UpdateDownloader {
     // MARK: - SHA256
 
     private func verifySHA256(file: URL, expectedFrom shaURL: URL, workDir: URL) async throws {
+        let session = URLSession(configuration: sessionConfiguration)
+        // Without invalidation, the session keeps its delegate queue and
+        // connection cache around until process exit — leaks one per install.
+        defer { session.invalidateAndCancel() }
         let data: Data
         do {
-            let (raw, response) = try await URLSession(configuration: sessionConfiguration).data(from: shaURL)
+            let (raw, response) = try await session.data(from: shaURL)
             if let http = response as? HTTPURLResponse, http.statusCode != 200 {
                 throw UpdateDownloaderError.unexpectedHTTPStatus(code: http.statusCode)
             }
@@ -207,7 +211,12 @@ public actor UpdateDownloader {
             return app
         }
         for child in directContents where (try? child.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
-            let nested = try fileManager.contentsOfDirectory(at: child, includingPropertiesForKeys: nil)
+            let nested: [URL]
+            do {
+                nested = try fileManager.contentsOfDirectory(at: child, includingPropertiesForKeys: nil)
+            } catch {
+                throw UpdateDownloaderError.fileSystemError(message: "list nested dir \(child.lastPathComponent): \(error)")
+            }
             if let app = nested.first(where: { $0.pathExtension == "app" }) {
                 return app
             }
