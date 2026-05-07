@@ -1,0 +1,63 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "21da5eeb6e21",
+  "session_id": "478c1cf9-1fc0-4946-b3b3-250d923e8f4e",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-07T16:08:43.77148Z",
+  "branch": "vendor-plugin-framework",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".github/workflows/assistant-build.yml"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "bd5d2fdaacae",
+  "token_usage": {
+    "input_tokens": 32,
+    "cache_creation_tokens": 108848,
+    "cache_read_tokens": 333367,
+    "output_tokens": 11167,
+    "api_call_count": 10
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-07T16:08:43.683214Z",
+    "agent_lines": 37,
+    "agent_removed": 37,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 37,
+    "total_lines_changed": 74,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 49,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/api-captures/claude-raw.json": 3,
+        ".context/api-captures/codex-raw.json": 45,
+        ".context/api-captures/copilot-raw.json": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 49,
+      "user_lines_removed": 0,
+      "agent_lines_added": 37,
+      "agent_lines_removed": 37,
+      "user_added_per_file": {
+        ".context/api-captures/claude-raw.json": 3,
+        ".context/api-captures/codex-raw.json": 45,
+        ".context/api-captures/copilot-raw.json": 1
+      }
+    }
+  ]
+}
