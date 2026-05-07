@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "302ea9143758",
+  "strategy": "manual-commit",
+  "branch": "vendor-plugin-framework",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".github/workflows/assistant-build.yml",
+    ".github/workflows/release.yml",
+    "scripts/build-app-bundle.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/30/2ea9143758/0/metadata.json",
+      "transcript": "/30/2ea9143758/0/full.jsonl",
+      "content_hash": "/30/2ea9143758/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 52,
+    "cache_creation_tokens": 13079,
+    "cache_read_tokens": 1080068,
+    "output_tokens": 10837,
+    "api_call_count": 9
+  }
+}
