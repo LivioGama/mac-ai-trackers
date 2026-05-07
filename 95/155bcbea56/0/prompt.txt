@@ -1,0 +1,2 @@
+- je ne comprends pas à quoi ca sert d'ouvrir l'emplacement du fichier de log au moment de la copie dans le clipboard
+- dans le commentaire, le contenu de la log devrait être créé dans une zone expandable, de manière à éviter d'avoir un commentaire à rallonge de publié

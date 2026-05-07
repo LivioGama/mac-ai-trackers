@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "95155bcbea56",
+  "strategy": "manual-commit",
+  "branch": "vendor-plugin-framework",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Plugins/TesterFeedbackComment.swift",
+    "AIUsagesTrackers/Sources/App/Views/TesterFeedbackSheet.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/TesterFeedbackCommentTests.swift"
+  ],
+  "sessions": [
+    {
+      "metadata": "/95/155bcbea56/0/metadata.json",
+      "transcript": "/95/155bcbea56/0/full.jsonl",
+      "content_hash": "/95/155bcbea56/0/content_hash.txt",
+      "prompt": "/95/155bcbea56/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 41,
+    "cache_creation_tokens": 113173,
+    "cache_read_tokens": 851916,
+    "output_tokens": 6990,
+    "api_call_count": 16
+  }
+}
