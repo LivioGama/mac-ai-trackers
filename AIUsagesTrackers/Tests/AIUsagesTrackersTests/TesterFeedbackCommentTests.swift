@@ -173,4 +173,56 @@ struct TesterFeedbackCommentTests {
         let payload = notesLine.dropFirst("Notes: ".count)
         #expect(payload.count == TesterFeedbackComment.notesCharacterCap)
     }
+
+    @Test("renderWithLogTail appends a fenced ```log block when the log is non-empty")
+    func renderWithLogTailAppendsFencedBlock() throws {
+        let body = TesterFeedbackComment.renderWithLogTail(
+            .init(
+                plan: .pro,
+                macOSVersion: "15.4",
+                context: try makeContext(),
+                submissionPath: .inApp,
+                checklist: [],
+                connectorLogAttached: true
+            ),
+            logFileContents: "line-1\nline-2\nline-3\n"
+        )
+        #expect(body.contains("Connector log tail:\n```log\nline-1\nline-2\nline-3\n```"))
+    }
+
+    @Test("renderWithLogTail omits the log block when contents are blank")
+    func renderWithLogTailSkipsEmpty() throws {
+        let body = TesterFeedbackComment.renderWithLogTail(
+            .init(
+                plan: .pro,
+                macOSVersion: "15.4",
+                context: try makeContext(),
+                submissionPath: .inApp,
+                checklist: [],
+                connectorLogAttached: false
+            ),
+            logFileContents: "   \n\n   "
+        )
+        #expect(!body.contains("```log"))
+    }
+
+    @Test("trimmedLogTail caps to byteCap and snaps to a line boundary")
+    func trimmedLogTailSnapsToLineBoundary() {
+        // 100 lines of "0123456789" (10 chars + newline = 11 bytes) → 1100 bytes
+        let lines = (0..<100).map { _ in "0123456789" }.joined(separator: "\n")
+        let tail = TesterFeedbackComment.trimmedLogTail(lines, byteCap: 50)
+        // Capped: each preserved line is intact (no mid-line cut) and total ≤ cap-ish
+        for line in tail.split(separator: "\n") {
+            #expect(line == "0123456789")
+        }
+        #expect(tail.utf8.count <= 50)
+    }
+
+    @Test("trimmedLogTail returns the full content when smaller than byteCap")
+    func trimmedLogTailKeepsSmallContent() {
+        let original = "abc\ndef\n"
+        let tail = TesterFeedbackComment.trimmedLogTail(original, byteCap: 1_000)
+        // The whitespace trimmer strips the trailing newline.
+        #expect(tail == "abc\ndef")
+    }
 }

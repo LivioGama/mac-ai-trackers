@@ -62,6 +62,42 @@ public struct TesterFeedbackComment: Sendable {
     public static let sentinel = "✅ tester-confirm"
     public static let notesCharacterCap = 2_048
 
+    /// Cap on the appended connector log tail. GitHub comments hard-cap at
+    /// 65_536 characters; 30 KB leaves headroom for the rest of the body and
+    /// avoids upload truncation on the maintainer's side.
+    public static let logTailByteCap = 30_000
+
+    /// Renders the sign-off comment with a ```log fenced block appended,
+    /// containing up to `tailByteCap` bytes from the end of `logFileContents`.
+    /// The block is omitted when contents are empty so the maintainer is not
+    /// misled into thinking a log was attached.
+    public static func renderWithLogTail(
+        _ input: Input,
+        logFileContents: String,
+        tailByteCap: Int = logTailByteCap
+    ) -> String {
+        let body = render(input)
+        let tail = trimmedLogTail(logFileContents, byteCap: tailByteCap)
+        guard !tail.isEmpty else { return body }
+        return body + "\n\nConnector log tail:\n```log\n\(tail)\n```"
+    }
+
+    /// Returns the tail of `contents` capped to `byteCap` UTF-8 bytes, snapped
+    /// to a line boundary so the fenced block never starts mid-line.
+    static func trimmedLogTail(_ contents: String, byteCap: Int) -> String {
+        let trimmed = contents.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return "" }
+        let utf8 = trimmed.utf8
+        if utf8.count <= byteCap { return trimmed }
+        let dropCount = utf8.count - byteCap
+        let cutIndex = utf8.index(utf8.startIndex, offsetBy: dropCount)
+        let candidate = String(trimmed[cutIndex...])
+        if let firstNewline = candidate.firstIndex(of: "\n") {
+            return String(candidate[candidate.index(after: firstNewline)...])
+        }
+        return candidate
+    }
+
     public static func render(_ input: Input) -> String {
         var lines: [String] = [sentinel, ""]
         lines.append("Plan: \(planLine(input))")
