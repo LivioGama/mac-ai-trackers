@@ -174,7 +174,7 @@ struct TesterFeedbackCommentTests {
         #expect(payload.count == TesterFeedbackComment.notesCharacterCap)
     }
 
-    @Test("renderWithLogTail appends a fenced ```log block when the log is non-empty")
+    @Test("renderWithLogTail wraps the log in a collapsed <details> block")
     func renderWithLogTailAppendsFencedBlock() throws {
         let body = TesterFeedbackComment.renderWithLogTail(
             .init(
@@ -187,7 +187,9 @@ struct TesterFeedbackCommentTests {
             ),
             logFileContents: "line-1\nline-2\nline-3\n"
         )
-        #expect(body.contains("Connector log tail:\n```log\nline-1\nline-2\nline-3\n```"))
+        // GitHub Markdown requires blank lines around the fenced block so
+        // the <details> container renders the code block instead of HTML.
+        #expect(body.contains("<details>\n<summary>Connector log tail</summary>\n\n```log\nline-1\nline-2\nline-3\n```\n\n</details>"))
     }
 
     @Test("renderWithLogTail omits the log block when contents are blank")

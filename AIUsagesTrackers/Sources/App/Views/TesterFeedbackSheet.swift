@@ -230,7 +230,7 @@ struct TesterFeedbackSheet: View {
     private var footer: some View {
         HStack(alignment: .top) {
             if phase == .copied {
-                Text("Comment + connector log tail copied to your clipboard. Click \"Open GitHub issue\" to continue — a confirmation prompt will appear before the browser opens.")
+                Text("Comment + connector log tail copied to your clipboard. Click \"Open GitHub issue\" to continue — a confirmation prompt will appear before the browser opens.\n\nIf you want to inspect or edit the log first, use \"Reveal in Finder\" above before pasting.")
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -243,7 +243,7 @@ struct TesterFeedbackSheet: View {
             Button {
                 primaryAction()
             } label: {
-                Text(phase == .copied ? "Open GitHub issue" : "Copy & reveal log")
+                Text(phase == .copied ? "Open GitHub issue" : "Copy comment")
             }
             .buttonStyle(.borderedProminent)
             .keyboardShortcut(.defaultAction)
@@ -280,8 +280,12 @@ struct TesterFeedbackSheet: View {
     private func primaryAction() {
         switch phase {
         case .composing:
+            // The connector log content is embedded directly in the
+            // clipboard payload as a collapsed <details> block, so the
+            // tester does not need to drag-attach the file separately.
+            // The "Reveal in Finder" button above remains for the rare
+            // case where they want to inspect or edit the log first.
             submitter.copy(renderedCommentWithLog())
-            submitter.reveal(connectorLogURL)
             phase = .copied
         case .copied:
             // The NSAlert outlives the menu-bar popover: even when opening the

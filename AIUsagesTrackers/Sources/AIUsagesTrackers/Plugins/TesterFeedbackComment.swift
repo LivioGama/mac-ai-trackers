@@ -67,10 +67,13 @@ public struct TesterFeedbackComment: Sendable {
     /// avoids upload truncation on the maintainer's side.
     public static let logTailByteCap = 30_000
 
-    /// Renders the sign-off comment with a ```log fenced block appended,
-    /// containing up to `tailByteCap` bytes from the end of `logFileContents`.
-    /// The block is omitted when contents are empty so the maintainer is not
-    /// misled into thinking a log was attached.
+    /// Renders the sign-off comment with the log tail appended inside a
+    /// collapsed `<details>` block so GitHub renders it as an expandable
+    /// section — keeps the visible comment compact while preserving full
+    /// context. Blank lines around the fenced block are required for
+    /// GitHub Markdown to render it inside the HTML container.
+    /// The block is omitted when contents are empty so the maintainer is
+    /// not misled into thinking a log was attached.
     public static func renderWithLogTail(
         _ input: Input,
         logFileContents: String,
@@ -79,7 +82,10 @@ public struct TesterFeedbackComment: Sendable {
         let body = render(input)
         let tail = trimmedLogTail(logFileContents, byteCap: tailByteCap)
         guard !tail.isEmpty else { return body }
-        return body + "\n\nConnector log tail:\n```log\n\(tail)\n```"
+        return body
+            + "\n\n<details>\n<summary>Connector log tail</summary>\n\n"
+            + "```log\n\(tail)\n```"
+            + "\n\n</details>"
     }
 
     /// Returns the tail of `contents` capped to `byteCap` UTF-8 bytes, snapped
