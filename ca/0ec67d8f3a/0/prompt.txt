@@ -1,0 +1,3 @@
+parfait, sauf que j'ai l'impression que le message est maintenant posté sur la PR et non pas sur l'issue
+
+Il faudrait le poster sur l'issue plutôt

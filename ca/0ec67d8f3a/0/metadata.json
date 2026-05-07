@@ -1,0 +1,54 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "ca0ec67d8f3a",
+  "session_id": "47739557-1e7d-4400-8d74-e4e0cbfc7ee9",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-07T22:43:08.125575Z",
+  "branch": "vendor-plugin-framework",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".github/workflows/assistant-build.yml",
+    "docs/ASSISTANT-ONBOARDING.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "aaa2723189f0",
+  "checkpoint_transcript_start": 172,
+  "transcript_lines_at_start": 172,
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 91389,
+    "cache_read_tokens": 615803,
+    "output_tokens": 4785,
+    "api_call_count": 8
+  },
+  "session_metrics": {
+    "turn_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-07T22:43:07.90797Z",
+    "agent_lines": 12,
+    "agent_removed": 45,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 12,
+    "total_lines_changed": 57,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 49,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/api-captures/claude-raw.json": 3,
+        ".context/api-captures/codex-raw.json": 45,
+        ".context/api-captures/copilot-raw.json": 1
+      }
+    }
+  ]
+}
