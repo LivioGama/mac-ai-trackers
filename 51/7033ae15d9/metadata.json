@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "517033ae15d9",
+  "strategy": "manual-commit",
+  "branch": "copilot-cli-vendor-support",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Logging/Logger.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Plugins/CopilotCLIPlugin.swift",
+    "AIUsagesTrackers/Sources/App/AppDelegate.swift",
+    "AIUsagesTrackers/Sources/App/VendorBranding.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/VendorRegistryConformanceTests.swift"
+  ],
+  "sessions": [
+    {
+      "metadata": "/51/7033ae15d9/0/metadata.json",
+      "transcript": "/51/7033ae15d9/0/full.jsonl",
+      "content_hash": "/51/7033ae15d9/0/content_hash.txt",
+      "prompt": "/51/7033ae15d9/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 256,
+    "cache_creation_tokens": 249541,
+    "cache_read_tokens": 3473774,
+    "output_tokens": 25968,
+    "api_call_count": 41
+  }
+}
