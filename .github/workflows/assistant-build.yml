@@ -2,9 +2,8 @@ name: Assistant change nightly build
 
 # Builds an ad-hoc-signed DMG for any PR linked to a `type:new-assistant`
 # or `type:vendor-evolution` issue, with tester-debug mode active for the
-# vendor under test. Posts a sticky comment on both the PR (reviewer
-# audience) and the linked issue (tester audience). See
-# docs/ASSISTANT-ONBOARDING.md §6.
+# vendor under test. Posts a sticky comment on the linked issue (the
+# canonical tester gathering point). See docs/ASSISTANT-ONBOARDING.md §6.
 
 on:
   pull_request:
@@ -297,41 +296,6 @@ jobs:
           else
             gh issue comment "${ISSUE}" --body "$body"
             echo "Posted sticky comment on issue #${ISSUE}"
-          fi
-
-      - name: Post sticky comment on PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          PR: ${{ needs.resolve-issue.outputs.pr_number }}
-          VENDOR: ${{ needs.resolve-issue.outputs.vendor_slug }}
-          SHA: ${{ needs.resolve-issue.outputs.head_sha }}
-          SHORT: ${{ needs.resolve-issue.outputs.head_sha_short }}
-          DMG_NAME: AI-Usages-Tracker-${{ needs.resolve-issue.outputs.vendor_slug }}-${{ needs.resolve-issue.outputs.head_sha_short }}.dmg
-          DMG_SHA: ${{ steps.pointer.outputs.sha256 }}
-          DOWNLOAD_URL: ${{ steps.pointer.outputs.download_url }}
-        run: |
-          set -euo pipefail
-          SENTINEL='<!-- assistant-build:sticky -->'
-          body_lines=(
-            "${SENTINEL}"
-            "🛠 Build for commit \`${SHORT}\` (vendor-debug enabled for \`${VENDOR}\`)"
-            ""
-            "Full commit: \`${SHA}\`"
-            ""
-            "- [Download ${DMG_NAME}](${DOWNLOAD_URL}) — SHA-256 \`${DMG_SHA}\`"
-            ""
-            "For tester instructions see the linked issue."
-          )
-          body=$(printf '%s\n' "${body_lines[@]}")
-          existing=$(gh api "repos/${REPO}/issues/${PR}/comments" --paginate \
-            --jq ".[] | select(.body | startswith(\"${SENTINEL}\")) | .id" | head -n1 || true)
-          if [ -n "$existing" ]; then
-            gh api -X PATCH "repos/${REPO}/issues/comments/${existing}" -f body="$body" >/dev/null
-            echo "Updated sticky comment on PR #${PR}"
-          else
-            gh pr comment "${PR}" --body "$body"
-            echo "Posted sticky comment on PR #${PR}"
           fi
 
   cleanup-on-close:

@@ -409,19 +409,22 @@ carries `type:new-assistant` or `type:vendor-evolution`. It:
    flag is mandatory: the in-app update checker queries
    `/releases/latest`, an endpoint that excludes prereleases by design,
    so stable installs cannot be offered a tester DMG as an upgrade.
-6. Posts (or updates) a sticky comment on **both** the PR (reviewer
-   audience) and the linked issue (tester audience), sentinel
+6. Posts (or updates) a sticky comment on the **linked issue** (the
+   canonical tester gathering point), sentinel
    `<!-- assistant-build:sticky -->`. The download link in the comment is
    the **direct asset URL**
    (`/releases/download/<tag>/<file>.dmg`) — one click yields the
-   `.dmg`, no zip wrapping, no GitHub login required.
+   `.dmg`, no zip wrapping, no GitHub login required. The PR itself does
+   not get a sticky comment: reviewers already see the workflow run in
+   the Checks tab, and a download link there would be noise (reviewers
+   read the diff, they do not run the DMG).
 
 ### 6.2 Sticky comment shape
 
-Issue-side body (full version, includes the in-app feedback path and the
-log file location). PR-side body (lighter — reviewer-oriented, links to
-the issue for tester instructions). Both carry the short SHA in the
-filename and the full SHA in the body.
+The comment carries the short SHA in the filename and the full SHA in
+the body, the in-app feedback path, the log file location, and the
+sign-off template pointer. It is rewritten on every successful build of
+the same PR so testers always see the latest commit's DMG.
 
 ### 6.3 Tester-debug build mode
 
