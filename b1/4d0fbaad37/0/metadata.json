@@ -1,0 +1,67 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "b14d0fbaad37",
+  "session_id": "f47762de-4a8f-41e8-b934-8ef7bee9fe50",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-07T17:17:57.625326Z",
+  "branch": "vendor-plugin-framework",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/CodexConnector.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Plugins/TesterFeedbackComment.swift",
+    "AIUsagesTrackers/Sources/App/Views/TesterFeedbackSheet.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/CodexConnectorTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/TesterFeedbackCommentTests.swift"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-haiku-4-5-20251001",
+  "turn_id": "d95a19927e2e",
+  "token_usage": {
+    "input_tokens": 130,
+    "cache_creation_tokens": 270681,
+    "cache_read_tokens": 8879184,
+    "output_tokens": 39146,
+    "api_call_count": 91
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-07T17:17:57.121265Z",
+    "agent_lines": 205,
+    "agent_removed": 19,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 205,
+    "total_lines_changed": 224,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 49,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/api-captures/claude-raw.json": 3,
+        ".context/api-captures/codex-raw.json": 45,
+        ".context/api-captures/copilot-raw.json": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 49,
+      "user_lines_removed": 0,
+      "agent_lines_added": 205,
+      "agent_lines_removed": 19,
+      "user_added_per_file": {
+        ".context/api-captures/claude-raw.json": 3,
+        ".context/api-captures/codex-raw.json": 45,
+        ".context/api-captures/copilot-raw.json": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+<system_instruction>
+You are working inside Conductor, a Mac app that lets the user run many coding agents in parallel.
+Your work should take place in the /Users/fcamblor/conductor/workspaces/mac-ai-trackers/warsaw directory (unless otherwise directed), which has been set up for you to work in.
+Each workspace has a .context directory (gitignored) where you can save files to collaborate with other agents.
+The target branch for this workspace is origin/copilot-cli-usage-api-research. Use this for actions like diffing (`git diff origin/copilot-cli-usage-api-research...`) or creating PRs (`gh pr create --base copilot-cli-usage-api-research`).
+
+Do not rename the current branch unless the user explicitly tells you to do so.
+
+By default, the user will only see the last message that you send before stopping. Include all essential information in the last message. The intermediate messages will be collapsed and accessible by the user but not displayed by default.
+
+If the user asks you to work on several unrelated tasks, you can suggest they start new workspaces.
+Sometimes the user might send you a message they meant to send in a different workspace or a different chat. If something doesn't make sense in the context of your work, just ask. 
+If the user asks for help with Conductor, you can ask them to go to "Help -> Send Feedback" to get in touch with our team.
+</system_instruction>
+
+j'ai installé et run un zip de test et j'ai 2 problèmes lors du test :
+
+# 1 - il semble y avoir eu une régression sur le compte active de codex
+
+Le compte codex est parfois plus marqué comme "active" (il alterne en fait)
+ca me parait etre une régression introduite peut-etre par la généralisation des plugins ?
+Essaie d'investiguer...
+
+#2 - quand je submit un feedback, ca ouvre simplement la page de l'issue sans rien d'autre
+
+Je ne sais pas si c'est possible de pré-remplir le commentaire
+Et, si ce n'est pas le cas, il faut que tu m'aides à pré-remplir les infos en me permettant à minima de copier un compte rendy dans le clipboard
+
+---
+
+<task-notification>
+<task-id>bmfzhrw49</task-id>
+<tool-use-id>toolu_01DsHW6sbbbZenJCA1bB14UY</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-fcamblor-conductor-workspaces-mac-ai-trackers-warsaw/f47762de-4a8f-41e8-b934-8ef7bee9fe50/tasks/bmfzhrw49.output</output-file>
+<status>completed</status>
+<summary>Background command "Find log files" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+fais B pour le probleme #1
+fais A+C pour le problème #2 (et copie le contenu du fichier de log sous forme d'un log avec triple backquotes dans le clipboard)
