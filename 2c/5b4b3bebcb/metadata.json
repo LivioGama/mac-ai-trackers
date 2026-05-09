@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "2c5b4b3bebcb",
+  "strategy": "manual-commit",
+  "branch": "copilot-cli-vendor-support",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".claude/skills/assistant-tester-followup/SKILL.md",
+    "docs/ASSISTANT-ONBOARDING.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/2c/5b4b3bebcb/0/metadata.json",
+      "transcript": "/2c/5b4b3bebcb/0/full.jsonl",
+      "content_hash": "/2c/5b4b3bebcb/0/content_hash.txt",
+      "prompt": "/2c/5b4b3bebcb/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 53,
+    "cache_creation_tokens": 429504,
+    "cache_read_tokens": 1363507,
+    "output_tokens": 16181,
+    "api_call_count": 20
+  }
+}

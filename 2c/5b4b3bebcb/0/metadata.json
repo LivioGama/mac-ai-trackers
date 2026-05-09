@@ -1,0 +1,54 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "2c5b4b3bebcb",
+  "session_id": "68d7b5ec-f34f-469b-9632-e87eae29df66",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-09T15:56:15.159185Z",
+  "branch": "copilot-cli-vendor-support",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".claude/skills/assistant-tester-followup/SKILL.md",
+    "docs/ASSISTANT-ONBOARDING.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "2135fd67a352",
+  "token_usage": {
+    "input_tokens": 53,
+    "cache_creation_tokens": 429504,
+    "cache_read_tokens": 1363507,
+    "output_tokens": 16181,
+    "api_call_count": 20
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-09T15:56:14.537969Z",
+    "agent_lines": 16,
+    "agent_removed": 9,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 16,
+    "total_lines_changed": 25,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 16,
+      "agent_lines_removed": 9
+    }
+  ]
+}
