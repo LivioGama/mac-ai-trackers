@@ -10,3 +10,7 @@ Dans ces historiques, il faudrait identifier des axes d'amelioration pour fluidi
 ---
 
 traite tout
+
+---
+
+/commit avec des commits les plus atomiques possible
