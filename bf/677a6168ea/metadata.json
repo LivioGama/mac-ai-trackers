@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "bf677a6168ea",
+  "strategy": "manual-commit",
+  "branch": "fix-pastille-unknown-percent-consistency",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/App/MenuBarLabelRenderer.swift",
+    "AIUsagesTrackers/Sources/App/Views/ConsumptionTierColor.swift"
+  ],
+  "sessions": [
+    {
+      "metadata": "/bf/677a6168ea/0/metadata.json",
+      "transcript": "/bf/677a6168ea/0/full.jsonl",
+      "content_hash": "/bf/677a6168ea/0/content_hash.txt",
+      "prompt": "/bf/677a6168ea/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 69,
+    "cache_creation_tokens": 119500,
+    "cache_read_tokens": 2056087,
+    "output_tokens": 16458,
+    "api_call_count": 33
+  }
+}

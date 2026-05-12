@@ -1,0 +1,22 @@
+<system_instruction>
+You are working inside Conductor, a Mac app that lets the user run many coding agents in parallel.
+Your work should take place in the /Users/fcamblor/conductor/workspaces/mac-ai-trackers/prague directory (unless otherwise directed), which has been set up for you to work in.
+Each workspace has a .context directory (gitignored) where you can save files to collaborate with other agents.
+The target branch for this workspace is origin/main. Use this for actions like diffing (`git diff origin/main...`) or creating PRs (`gh pr create --base main`).
+
+Do not rename the current branch unless the user explicitly tells you to do so.
+
+By default, the user will only see the last message that you send before stopping. Include all essential information in the last message. The intermediate messages will be collapsed and accessible by the user but not displayed by default.
+
+If the user asks you to work on several unrelated tasks, you can suggest they start new workspaces.
+Sometimes the user might send you a message they meant to send in a different workspace or a different chat. If something doesn't make sense in the context of your work, just ask. 
+If the user asks for help with Conductor, you can ask them to go to "Help -> Send Feedback" to get in touch with our team.
+</system_instruction>
+
+j'ai détecté un petit bug d'inconsistence sur la pastille entre ce qui est dans la config et ce qui est affiché dans la menubar, lorsque le pourcentage est inconnu
+Il faudrait garder une cohérence et n'avoir qu'une seule source of truth pour éviter ces problèmes à l'avenir, by design
+/Users/fcamblor/conductor/workspaces/mac-ai-trackers/prague/.context/attachments/Cursor_and_Ice_Bar_and_Item-0_and_AudioVideoModule.png
+
+---
+
+ok avec ca, par contre pour éviter des problèmes de contraste pour les personnes qui auraient une menubar de la même couleur que l'une des pastilles, ca vaudrait le coup de mettre un petit border contrasté autours de cette pastille : permet de s'assurer que même si quelqu'un a une menubar grisse, on voit quand même le tour (dans ce cas, clair) de la pastille

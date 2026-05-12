@@ -1,0 +1,54 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "bf677a6168ea",
+  "session_id": "41523a67-aef8-4bfd-b881-e8a4d208494a",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-12T11:39:33.111514Z",
+  "branch": "fix-pastille-unknown-percent-consistency",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/App/MenuBarLabelRenderer.swift",
+    "AIUsagesTrackers/Sources/App/Views/ConsumptionTierColor.swift"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "3283b5b8e3e4",
+  "token_usage": {
+    "input_tokens": 69,
+    "cache_creation_tokens": 119500,
+    "cache_read_tokens": 2056087,
+    "output_tokens": 16458,
+    "api_call_count": 33
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-12T11:39:32.892719Z",
+    "agent_lines": 33,
+    "agent_removed": 2,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 33,
+    "total_lines_changed": 35,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 33,
+      "agent_lines_removed": 2
+    }
+  ]
+}
