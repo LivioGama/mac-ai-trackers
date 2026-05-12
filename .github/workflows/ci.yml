@@ -1,0 +1,66 @@
+name: CI
+
+# Runs `swift build` and `swift test` on every push and pull request
+# targeting `main`. This is the baseline correctness gate for the Swift
+# package; per-vendor smoke checks live in separate workflows.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 26
+        # Same prep as release.yml / assistant-build.yml — the codebase
+        # requires Swift 6.2.
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE_PATH" ]; then
+            echo "No Xcode 26.x found on runner. Available:"
+            ls -d /Applications/Xcode*.app
+            exit 1
+          fi
+          echo "Using: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+
+      - name: Show build environment
+        run: |
+          xcodebuild -version
+          swift --version
+          echo "macOS: $(sw_vers -productVersion)"
+
+      - name: Strip SwiftLint plugin for CI build
+        run: |
+          # SwiftLintPlugins fails on CI runners with "prebuild command
+          # cannot use executables built from source". Lint is a dev/PR
+          # concern, enforced locally and in Xcode — not a CI gate.
+          python3 -c "
+          import re, pathlib
+          p = pathlib.Path('AIUsagesTrackers/Package.swift')
+          s = p.read_text()
+          s = re.sub(r',\s*plugins:\s*\[[^\]]*\]', '', s)
+          p.write_text(s)
+          "
+
+      - name: Build
+        working-directory: AIUsagesTrackers
+        run: swift build
+
+      - name: Test
+        working-directory: AIUsagesTrackers
+        run: swift test
