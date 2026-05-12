@@ -64,3 +64,53 @@ jobs:
       - name: Test
         working-directory: AIUsagesTrackers
         run: swift test
+
+  smoke-tests:
+    # Integration smoke for the NSStatusItem render feedback loop fix
+    # (#39). The test launches the compiled app in a sandbox, lets it
+    # idle 8 s and reads back a render-count counter exported every
+    # 2 s. With the dedup fix the counter stays ≤ 5; without it the
+    # loop drives it to ~4 800.
+    #
+    # NOTE (qualification PR): this job runs independently of
+    # build-and-test so that the simulated regression in
+    # MenuBarRefreshController (which fails the unit tests on
+    # purpose) doesn't short-circuit the smoke we actually want to
+    # observe. The final integration PR will add `needs:
+    # build-and-test` once we know the test discriminates on GHA.
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      RUN_SMOKE_TESTS: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 26
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE_PATH" ]; then
+            echo "No Xcode 26.x found on runner. Available:"
+            ls -d /Applications/Xcode*.app
+            exit 1
+          fi
+          echo "Using: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+
+      - name: Strip SwiftLint plugin for CI build
+        run: |
+          python3 -c "
+          import re, pathlib
+          p = pathlib.Path('AIUsagesTrackers/Package.swift')
+          s = p.read_text()
+          s = re.sub(r',\s*plugins:\s*\[[^\]]*\]', '', s)
+          p.write_text(s)
+          "
+
+      - name: Build app binary
+        working-directory: AIUsagesTrackers
+        run: swift build --product AIUsagesTrackers
+
+      - name: Run StatusItemRenderSmoke
+        working-directory: AIUsagesTrackers
+        run: swift test --filter StatusItemRenderSmoke
