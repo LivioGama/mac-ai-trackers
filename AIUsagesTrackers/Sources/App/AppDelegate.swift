@@ -27,6 +27,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var activeInstallKind: InstallationKind?
     private var activeInstallBundlePath: String?
 
+    private var menuBarRefreshController: MenuBarRefreshController?
+    /// When `AI_TRACKER_EXPORT_RENDER_COUNT` points to a writable path, the
+    /// running app flushes `menuBarRefreshController.renderCount` there every
+    /// two seconds. Used by the integration smoke test to detect a return of
+    /// the status item render feedback loop without sampling CPU directly.
+    private var renderCountExportTask: Task<Void, Never>?
+
     /// Shared preferences store — exposed as static so the SwiftUI Settings scene
     /// (constructed before applicationDidFinishLaunching) can access it.
     static let sharedPreferences: UserDefaultsAppPreferences = UserDefaultsAppPreferences()
@@ -59,8 +66,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSApplication.shared.applicationIconImage = icon
         }
 
-        let home = FileManager.default.homeDirectoryForCurrentUser.path
-        let guard_ = AppPidGuard(cacheDir: "\(home)/.cache/ai-usages-tracker")
+        let guard_ = AppPidGuard(cacheDir: Loggers.cacheDir)
         do {
             try guard_.acquire()
         } catch AppPidGuardError.alreadyRunning(let pid, _) {
@@ -261,31 +267,69 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         popover.contentViewController = hosting
         self.popover = popover
 
+        menuBarRefreshController = MenuBarRefreshController { [weak self] key in
+            guard let self, let button = self.statusItem?.button else { return }
+            button.image = MenuBarLabelRenderer.render(
+                segments: key.segments,
+                separator: key.separator,
+                fallbackText: key.text,
+                isDarkMenuBar: key.isDark,
+                isUnconfigured: key.isUnconfigured
+            )
+        }
+
         if let button = item.button {
             button.target = self
             button.action = #selector(togglePopover(_:))
             // The menu bar appearance can change (wallpaper-driven tinting) without
             // the app's effectiveAppearance changing, so we observe the button itself.
             appearanceObserver = button.observe(\.effectiveAppearance, options: [.new]) { [weak self] _, _ in
-                Task { @MainActor in self?.refreshStatusItemImage() }
+                Task { @MainActor in
+                    guard let self, let button = self.statusItem?.button else { return }
+                    let isDark = button.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                    guard self.menuBarRefreshController?.shouldHandleAppearanceChange(isDark: isDark) == true else { return }
+                    self.refreshStatusItemImage()
+                }
             }
         }
 
         refreshStatusItemImage()
+        startRenderCountExportIfRequested()
+    }
+
+    private func startRenderCountExportIfRequested() {
+        guard let exportPath = ProcessInfo.processInfo.environment["AI_TRACKER_EXPORT_RENDER_COUNT"],
+              !exportPath.isEmpty,
+              renderCountExportTask == nil else { return }
+        let url = URL(fileURLWithPath: exportPath)
+        Loggers.app.log(.info, "Exporting menu bar render count to \(exportPath) every 2 s")
+        renderCountExportTask = Task { @MainActor [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 2 * 1_000_000_000)
+                guard !Task.isCancelled else { break }
+                let count = self?.menuBarRefreshController?.renderCount ?? 0
+                let payload = Data("\(count)\n".utf8)
+                do {
+                    try payload.write(to: url, options: .atomic)
+                } catch {
+                    Loggers.app.log(.warning, "render count export failed: \(error)")
+                }
+            }
+        }
     }
 
     private func refreshStatusItemImage() {
-        guard let store = usageStore, let button = statusItem?.button else { return }
+        guard let store = usageStore,
+              let button = statusItem?.button,
+              let controller = menuBarRefreshController else { return }
         let isDark = button.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-        let isUnconfigured = Self.sharedPreferences.menuBarSegments.isEmpty
-        let image = MenuBarLabelRenderer.render(
+        controller.refresh(key: MenuBarRenderKey(
             segments: store.menuBarSegments,
+            text: store.menuBarText,
             separator: Self.sharedPreferences.menuBarSeparator,
-            fallbackText: store.menuBarText,
-            isDarkMenuBar: isDark,
-            isUnconfigured: isUnconfigured
-        )
-        button.image = image
+            isDark: isDark,
+            isUnconfigured: Self.sharedPreferences.menuBarSegments.isEmpty
+        ))
     }
 
     @objc private func togglePopover(_ sender: Any?) {
