@@ -1,0 +1,9 @@
+penses-tu qu'il soit facilement possible de créer un test unitaire permettant de reproduire le problème et s'assurer qu'il ne revient pas un jour ?
+
+---
+
+est-ce que le smoke cpu va fonctionner à l'intérieur de github action (headless je pense ?) ?
+
+---
+
+ok pour A + smoke compteur

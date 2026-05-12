@@ -1,0 +1,50 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "1d1a147667cd",
+  "session_id": "a08b8bab-dc52-4724-807c-19e9fdc83701",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-12T14:17:48.654343Z",
+  "branch": "fix-high-cpu-usage",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/MenuBar/MenuBarRefreshController.swift",
+    "AIUsagesTrackers/Sources/App/AppDelegate.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/MenuBarRefreshControllerTests.swift"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "8e038818b1d3",
+  "checkpoint_transcript_start": 298,
+  "transcript_lines_at_start": 298,
+  "token_usage": {
+    "input_tokens": 34,
+    "cache_creation_tokens": 30957,
+    "cache_read_tokens": 2627206,
+    "output_tokens": 20547,
+    "api_call_count": 19
+  },
+  "session_metrics": {
+    "turn_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-12T14:17:48.274102Z",
+    "agent_lines": 228,
+    "agent_removed": 31,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 228,
+    "total_lines_changed": 259,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
