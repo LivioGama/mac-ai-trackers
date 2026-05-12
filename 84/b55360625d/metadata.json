@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "84b55360625d",
+  "strategy": "manual-commit",
+  "branch": "release-0.5.1",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "docs/ASSISTANT-ONBOARDING.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/84/b55360625d/0/metadata.json",
+      "transcript": "/84/b55360625d/0/full.jsonl",
+      "content_hash": "/84/b55360625d/0/content_hash.txt",
+      "prompt": "/84/b55360625d/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 54,
+    "cache_creation_tokens": 119578,
+    "cache_read_tokens": 1202868,
+    "output_tokens": 9570,
+    "api_call_count": 30
+  }
+}

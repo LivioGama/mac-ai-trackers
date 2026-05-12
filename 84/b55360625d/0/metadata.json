@@ -1,0 +1,53 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "84b55360625d",
+  "session_id": "bc0144ec-246b-4005-8504-e3673aec198b",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-12T16:26:22.956566Z",
+  "branch": "release-0.5.1",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "docs/ASSISTANT-ONBOARDING.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "841194024c0f",
+  "token_usage": {
+    "input_tokens": 54,
+    "cache_creation_tokens": 119578,
+    "cache_read_tokens": 1202868,
+    "output_tokens": 9570,
+    "api_call_count": 30
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-12T16:26:22.811163Z",
+    "agent_lines": 11,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 11,
+    "total_lines_changed": 11,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 11,
+      "agent_lines_removed": 0
+    }
+  ]
+}
