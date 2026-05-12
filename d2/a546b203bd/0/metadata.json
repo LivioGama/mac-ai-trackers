@@ -1,0 +1,91 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "d2a546b203bd",
+  "session_id": "8236daee-6968-4b12-be13-764b7f29b425",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-12T11:08:51.820949Z",
+  "branch": "fixing-statuspages",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Models/MenuBarSegmentConfig.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Preferences/AppPreferenceKeys.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Preferences/AppPreferences.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Preferences/OutageWarningMigration.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Store/UsageStore.swift",
+    "AIUsagesTrackers/Sources/App/AppDelegate.swift",
+    "AIUsagesTrackers/Sources/App/MenuBarLabelRenderer.swift",
+    "AIUsagesTrackers/Sources/App/Views/Settings/MenubarHintSettingsView.swift",
+    "AIUsagesTrackers/Sources/App/Views/Settings/SegmentEditor.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/AppPreferencesTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/MenuBarLabelRendererTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/OutageWarningMigrationTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/UsageStoreTests.swift"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "3872440b3d3d",
+  "token_usage": {
+    "input_tokens": 140,
+    "cache_creation_tokens": 391808,
+    "cache_read_tokens": 8816375,
+    "output_tokens": 42248,
+    "api_call_count": 100
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-12T11:08:51.412898Z",
+    "agent_lines": 388,
+    "agent_removed": 189,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 388,
+    "total_lines_changed": 577,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 16,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/attachments/PR instructions.md": 16
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 16,
+      "user_lines_removed": 0,
+      "agent_lines_added": 396,
+      "agent_lines_removed": 183,
+      "user_added_per_file": {
+        ".context/attachments/PR instructions.md": 16
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 16,
+      "user_lines_removed": 0,
+      "agent_lines_added": 388,
+      "agent_lines_removed": 189,
+      "user_added_per_file": {
+        ".context/attachments/PR instructions.md": 16
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 16,
+      "user_lines_removed": 0,
+      "agent_lines_added": 388,
+      "agent_lines_removed": 189,
+      "user_added_per_file": {
+        ".context/attachments/PR instructions.md": 16
+      }
+    }
+  ]
+}

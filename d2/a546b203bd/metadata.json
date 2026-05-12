@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "d2a546b203bd",
+  "strategy": "manual-commit",
+  "branch": "fixing-statuspages",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Models/MenuBarSegmentConfig.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Preferences/AppPreferenceKeys.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Preferences/AppPreferences.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Preferences/OutageWarningMigration.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Store/UsageStore.swift",
+    "AIUsagesTrackers/Sources/App/AppDelegate.swift",
+    "AIUsagesTrackers/Sources/App/MenuBarLabelRenderer.swift",
+    "AIUsagesTrackers/Sources/App/Views/Settings/MenubarHintSettingsView.swift",
+    "AIUsagesTrackers/Sources/App/Views/Settings/SegmentEditor.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/AppPreferencesTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/MenuBarLabelRendererTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/OutageWarningMigrationTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/UsageStoreTests.swift"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d2/a546b203bd/0/metadata.json",
+      "transcript": "/d2/a546b203bd/0/full.jsonl",
+      "content_hash": "/d2/a546b203bd/0/content_hash.txt",
+      "prompt": "/d2/a546b203bd/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 140,
+    "cache_creation_tokens": 391808,
+    "cache_read_tokens": 8816375,
+    "output_tokens": 42248,
+    "api_call_count": 100
+  }
+}
