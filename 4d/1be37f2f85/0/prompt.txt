@@ -1,0 +1,5 @@
+par contre, tu n'as pas du tout pris en compte le fait de rajouter un border contrasté autours de la pastille (à la fois dans la menubar et dans les préférences)
+
+---
+
+ca a diminué la taille de la pastille qui devient trop petite ... pourrais-tu augmenter un peu sa taille ?
