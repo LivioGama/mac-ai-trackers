@@ -1,0 +1,41 @@
+<system_instruction>
+You are working inside Conductor, a Mac app that lets the user run many coding agents in parallel.
+Your work should take place in the /Users/fcamblor/conductor/workspaces/mac-ai-trackers/sarajevo directory (unless otherwise directed), which has been set up for you to work in.
+Each workspace has a .context directory (gitignored) where you can save files to collaborate with other agents.
+The target branch for this workspace is origin/main. Use this for actions like diffing (`git diff origin/main...`) or creating PRs (`gh pr create --base main`).
+
+Do not rename the current branch unless the user explicitly tells you to do so.
+
+By default, the user will only see the last message that you send before stopping. Include all essential information in the last message. The intermediate messages will be collapsed and accessible by the user but not displayed by default.
+
+If the user asks you to work on several unrelated tasks, you can suggest they start new workspaces.
+Sometimes the user might send you a message they meant to send in a different workspace or a different chat. If something doesn't make sense in the context of your work, just ask. 
+If the user asks for help with Conductor, you can ask them to go to "Help -> Send Feedback" to get in touch with our team.
+</system_instruction>
+
+il y a actuellement un outage affiché dans l'app et qui concerne openai : https://status.openai.com/incidents/01KRG0AZKH41DV4D9SNJSXM33Q
+/Users/fcamblor/conductor/workspaces/mac-ai-trackers/sarajevo/.context/attachments/Item-0_and_NowPlaying.png 
+
+Le problème c'est qu'il ne concerne pas OpenAI Codex (il concerne les APIs, mais on s'en fiche)
+
+Le filtering par component sur incident.io ne me paraît pas OK au niveau de notre implémentation
+
+---
+
+et au niveau de l'ordre d'affichage, il faudrait systématiser le fait d'afficher les outages en premier dans la liste (là, il arrive après les cards de claude code
+
+---
+
+pour le filtrage, il faut filtrer sur tous les composants possibles de Codex, mais :
+- de manière dynamique (on hardcode pas les ids, parce qu'ils pourraient changer à tout moment et on ne le détecterait pas)
+- par contre cette liste d'ids peut être rafraichie assez rarement (une fois par jour, c'est pas grave si on a un drift de 24h)
+
+Il pourrait être intéressant d'afficher la liste des component ids+nom auxquels on s'abonne dans un tab dédié dans les préférences (+ bouton permettant de manuellement refresh la liste sans attendre les 24h + toggle permettant de dire si on souhaite s'abonner ou non aux outages sur le component cible ... toggle actif par défaut)
+
+---
+
+1/ oui regarde (b) plus précisément (doc d'incident.io) et sinon on fallback sur a
+2/ au niveau du stockage, prend en compte la typologie de source de données (ici, incident.io, mais d'autres vendors pourraient utiliser d'autres plateformes) mais sinon, ok sur le principe de stocker ca dans les fichiers de cache
+5/ précision : on parle bien des composants enfant au root element "codex" hein ? :)
+
+ok avec tous les autres points
