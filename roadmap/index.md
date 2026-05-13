@@ -14,4 +14,4 @@ graph TD
 
 ## Epics
 
-_No epics yet — propose one with the `roadmap-feature` skill._
+_None — every planned epic has shipped._
