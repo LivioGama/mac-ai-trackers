@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "7286a2c016f9",
+  "strategy": "manual-commit",
+  "branch": "fix-incidentio-component-filtering",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "roadmap/codex-status-component-subscriptions.md",
+    "roadmap/index.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/72/86a2c016f9/0/metadata.json",
+      "transcript": "/72/86a2c016f9/0/full.jsonl",
+      "content_hash": "/72/86a2c016f9/0/content_hash.txt",
+      "prompt": "/72/86a2c016f9/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 42,
+    "cache_creation_tokens": 121028,
+    "cache_read_tokens": 1077016,
+    "output_tokens": 5639,
+    "api_call_count": 13
+  }
+}

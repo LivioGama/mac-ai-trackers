@@ -1,0 +1,8 @@
+oui, crée l'entrée de roadmap
+
+---
+
+- pour vérifier que le parsing RSC fonctionne, j'aimerais que la seed list soit vide dans un premier temps, afin de valider que le parsing fonctionne bien ... puis lorsque c'est le cas, on peut rajouter le seed (dans un commit séparé)
+- meme si la clef n'est pas le label, il faut quand même stocker en cache le label pour pouvoir donner du contexte à l'utilisateur (ne pas juste lui présenter l'id)
+
+Prends ces 2 remarques mineures en compte et /commit
