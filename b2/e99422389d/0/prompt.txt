@@ -1,0 +1,78 @@
+<system_instruction>
+You are working inside Conductor, a Mac app that lets the user run many coding agents in parallel.
+Your work should take place in the /Users/fcamblor/conductor/workspaces/mac-ai-trackers/damascus directory (unless otherwise directed), which has been set up for you to work in.
+Each workspace has a .context directory (gitignored) where you can save files to collaborate with other agents.
+The target branch for this workspace is origin/main. Use this for actions like diffing (`git diff origin/main...`) or creating PRs (`gh pr create --base main`).
+
+Do not rename the current branch unless the user explicitly tells you to do so.
+
+By default, the user will only see the last message that you send before stopping. Include all essential information in the last message. The intermediate messages will be collapsed and accessible by the user but not displayed by default.
+
+If the user asks you to work on several unrelated tasks, you can suggest they start new workspaces.
+Sometimes the user might send you a message they meant to send in a different workspace or a different chat. If something doesn't make sense in the context of your work, just ask. 
+If the user asks for help with Conductor, you can ask them to go to "Help -> Send Feedback" to get in touch with our team.
+</system_instruction>
+
+J'ai plusieurs utilisateurs qui me remontent que lorsqu'ils n'utilisent pas claude code CLI mais uniquement claude desktop, leur fenêtre de temps ne démarre jamais dans l'app alors que dans claude desktop ils ont bien une consommation qui se fait
+
+Je pose l'hypothèse que c'est parce que je n'arrive pas à récupérer leur token d'authentification (la manière actuelle ne fonctionne que lorsqu'une session claude code CLI est en cours)
+Tu pourrais m'aider à investiguer ?
+
+Je te donne leur fichier usages.json :
+{
+ "usages" : [
+ {
+ "account" : "robin.lopez@4sh.fr",
+ "isActive" : true,
+ "lastAcquiredOn" : "2026-04-27T12:27:03Z",
+ "lastError" : {
+ "timestamp" : "2026-05-19T08:39:10Z",
+ "type" : "http_429"
+ },
+ "metrics" : [
+ {
+ "name" : "5h sessions (all models)",
+ "resetAt" : "2026-04-27T13:39:59Z",
+ "type" : "time-window",
+ "usagePercent" : 84,
+ "windowDurationMinutes" : 300
+ },
+ {
+ "name" : "Weekly (all models)",
+ "resetAt" : "2026-04-28T21:59:59Z",
+ "type" : "time-window",
+ "usagePercent" : 53,
+ "windowDurationMinutes" : 10080
+ }
+ ],
+ "vendor" : "claude"
+ }
+ ]
+}
+
+---
+
+l'app affiche des ??? : /Users/fcamblor/conductor/workspaces/mac-ai-trackers/damascus/.context/attachments/image.png
+
+---
+
+voila ses logs: /Users/fcamblor/conductor/workspaces/mac-ai-trackers/damascus/.context/attachments/claude-usages-connector.log
+
+---
+
+oui, pars sur ca, et n'oublie pas de mettre à jour les docs sur le vendor anthropic concernant ces subtilités
+
+---
+
+j'aimerais que tu m'expliques davantage ce que tu as fait quand tu dis:
+> ClaudeCodeConnector.swift — catch dédié ClaudeAuthError.tokenExpired qui retourne token_expired + vide lastKnownMetrics sans appeler l’API. HTTP 401 mappé à token_expired (au lieu de http_401) + vide aussi lastKnownMetrics. Conséquence : sur le prochain 429, plus rien à “préserver” → l’erreur reste visible.
+
+On est d'accords qu'avec un token expired, on ne supprime pas des données d'une time-window qui n'est pas elle-même expired ?
+
+---
+
+oui
+
+---
+
+comment puis-je faire pour partager le build à robin ?

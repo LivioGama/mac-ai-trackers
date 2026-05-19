@@ -1,0 +1,107 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "b2e99422389d",
+  "session_id": "ecf1199f-eae7-41ed-9976-ab0be6461952",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-19T11:19:30.913484Z",
+  "branch": "claude-desktop-auth-token",
+  "checkpoints_count": 6,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeCodeConnector.swift",
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeCredentialLocator.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/ClaudeCodeConnectorTests.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/ClaudeCredentialLocatorTests.swift",
+    "docs/vendors/claude.md"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-haiku-4-5-20251001",
+  "turn_id": "ea4bad1f1afe",
+  "token_usage": {
+    "input_tokens": 321,
+    "cache_creation_tokens": 440491,
+    "cache_read_tokens": 9710830,
+    "output_tokens": 71289,
+    "api_call_count": 83
+  },
+  "session_metrics": {
+    "turn_count": 8
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-19T11:19:29.960941Z",
+    "agent_lines": 622,
+    "agent_removed": 17,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 622,
+    "total_lines_changed": 639,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 685,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/attachments/claude-usages-connector.log": 685
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 685,
+      "user_lines_removed": 0,
+      "agent_lines_added": 319,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        ".context/attachments/claude-usages-connector.log": 685
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 685,
+      "user_lines_removed": 0,
+      "agent_lines_added": 319,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        ".context/attachments/claude-usages-connector.log": 685
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 685,
+      "user_lines_removed": 0,
+      "agent_lines_added": 622,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        ".context/attachments/claude-usages-connector.log": 685
+      }
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 685,
+      "user_lines_removed": 0,
+      "agent_lines_added": 622,
+      "agent_lines_removed": 17,
+      "user_added_per_file": {
+        ".context/attachments/claude-usages-connector.log": 685
+      }
+    }
+  ]
+}
