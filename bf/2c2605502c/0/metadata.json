@@ -1,0 +1,53 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "bf2c2605502c",
+  "session_id": "2b21e7f7-df5c-4d54-a22f-e6de06ca1ddc",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-19T09:12:08.958833Z",
+  "branch": "clarify-popover-no-window-state",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/App/Views/TimeWindowMetricRow.swift"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "6c449caebe47",
+  "token_usage": {
+    "input_tokens": 42,
+    "cache_creation_tokens": 115872,
+    "cache_read_tokens": 536642,
+    "output_tokens": 5780,
+    "api_call_count": 12
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-19T09:12:08.83095Z",
+    "agent_lines": 16,
+    "agent_removed": 6,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 16,
+    "total_lines_changed": 22,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 16,
+      "agent_lines_removed": 6
+    }
+  ]
+}
