@@ -50,6 +50,7 @@ struct TimeWindowMetricRow: View {
                 // plain text rather than echoing "???" on every field.
                 Text("Window opens with your next request — usage and reset time will appear then.")
                     .font(.system(size: 10))
+                    .italic()
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
