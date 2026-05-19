@@ -1,0 +1,17 @@
+/impeccable
+ok, quand on déplie les zones collapsibles :
+- ca lag pas mal sur la partie chart (j'imagine parce qu'il y a beaucoup d'éléments à afficher)
+- je trouve pas ca super gracieux de slide verticalement le contenu, ca fait assez bizarre
+- le drag'n'drop des series dans les charts et pas du tout fluide (ca lag au démarrage)
+
+---
+
+le drag'n'drop des series dans les charts est vraiment pas fluide
+
+---
+
+c'est pas flagrant
+
+---
+
+c'est pire qu'avant (c'est toujours aussi lent, et en plus c'est moche !
