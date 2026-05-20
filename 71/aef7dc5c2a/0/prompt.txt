@@ -1,0 +1,78 @@
+<system_instruction>
+You are working inside Conductor, a Mac app that lets the user run many coding agents in parallel.
+Your work should take place in the /Users/fcamblor/conductor/workspaces/mac-ai-trackers/fredericton directory (unless otherwise directed), which has been set up for you to work in.
+Each workspace has a .context directory (gitignored) where you can save files to collaborate with other agents.
+The target branch for this workspace is origin/main. Use this for actions like diffing (`git diff origin/main...`) or creating PRs (`gh pr create --base main`).
+
+Do not rename the current branch unless the user explicitly tells you to do so.
+
+By default, the user will only see the last message that you send before stopping. Include all essential information in the last message. The intermediate messages will be collapsed and accessible by the user but not displayed by default.
+
+If the user asks you to work on several unrelated tasks, you can suggest they start new workspaces.
+Sometimes the user might send you a message they meant to send in a different workspace or a different chat. If something doesn't make sense in the context of your work, just ask. 
+If the user asks for help with Conductor, you can ask them to go to "Help -> Send Feedback" to get in touch with our team.
+</system_instruction>
+
+j'aimerais bien que tu me produise une analyse des ratios de tokens (cf scripts/README.md)
+
+---
+
+suite à cette analyse, les scripts et la doc présents dans scripts/ mériteraient-ils d'être améliorés ?
+Ne serait-il pas possible de faire un script qui les appelle tous pour re-générer d'un seul coup les 2 images ?
+
+---
+
+oui
+
+---
+
+il faudrait renommer "Claude (personal)" en "Claude Pro" et "Claude (4sh.fr)" en "Claude Teams (Premium)"
+
+---
+
+ce serait bien de mettre un petit texte explicatif sur les graphiques pour :
+- expliquer comment sont calculés les ratios (ce qu'ils représentent)
+- pourquoi plus le delta_5h est proche de 100% et plus on peut faire confiance au ratio obtenu (gomme les erreurs d'arrondis sur les pourcentage entiers fournis par les APIs d'usages)
+
+---
+
+demande moi confirmation sur le texte explicatif avant de commiter quoi que ce soit
+
+Le texte s'affiche par-dessus le graphe actuellement, et nuit à sa lisibilité, je trouve pas ca top
+Pourrais-tu le déplacement en-dehors (au-dessus ou en-dessous) de manière à ce que le rectangle n'interfère pas avec le graphique ?
+Tu peux en profiter pour prendre toute la largeur de l'image pour ton texte du coup
+
+---
+
+je suis pas tout à fait d'accord avec ton "higher ratio = more generous 7d quotas" : si la fenêtre de 5h est 5x plus petite, même si on peut en mettre 2x plus dans une fenêtre de 7d, il n'empêche que la fenêtre de 7d est 2.5x plus petite à la fin
+
+---
+
+j'aime bien ta définition d'origine : how many times the 5h time window must be satured to fill the 7d quota window
+
+C'est juste que ton dernier statement n'est pas bon
+
+---
+
+tu peux quand même mettre "Higher ratio = ...." mais pas ta définition actuelle (trouve mieux)
+
+pour reliability, c'est OK
+
+---
+
+je préfère la 2
+
+---
+
+tout ton blabla est compressé sur une seule ligne (qui agrandit énormément l'image)
+Il faudrait que tu reviennes a la ligne quand il faut pour éviter d'agrandir la largeur de l'image
+
+---
+
+- déplace le texte en-dessous du graphe plutot qu'au-dessus
+- mets un alignement left plutot que center
+- rajoute un laïus sur le fait que les tailles de fenêtre de 5h/7d en valeur absolue peuvent ne pas être comparable entre 2 forfaits différents (on peut surement faire rentrer plus de tokens dans un fenetre 7d d'un Claude Teams Premium que dans un Claude Pro
+
+---
+
+peux-tu rapprocher un peu la textbox du bas du graphique ?

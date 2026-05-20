@@ -1,0 +1,183 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "71aef7dc5c2a",
+  "session_id": "462e6b60-307d-492b-846b-fbd4d6df1dbd",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-20T12:51:21.42793Z",
+  "branch": "token-ratio-analysis",
+  "checkpoints_count": 10,
+  "files_touched": [
+    "scripts/README.md",
+    "scripts/accounts.example.json",
+    "scripts/generate-ratios.sh",
+    "scripts/ratios-to-png.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "b223d5900664",
+  "token_usage": {
+    "input_tokens": 718,
+    "cache_creation_tokens": 151069,
+    "cache_read_tokens": 8724082,
+    "output_tokens": 40319,
+    "api_call_count": 87
+  },
+  "session_metrics": {
+    "turn_count": 12
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-20T12:51:20.870018Z",
+    "agent_lines": 315,
+    "agent_removed": 54,
+    "human_added": 26,
+    "human_modified": 2,
+    "human_removed": 0,
+    "total_committed": 343,
+    "total_lines_changed": 397,
+    "agent_percentage": 92.9471032745592,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 300,
+      "agent_lines_removed": 51,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 369,
+      "user_lines_removed": 2,
+      "agent_lines_added": 300,
+      "agent_lines_removed": 51,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72,
+        "scripts/ratios-to-png.py": 28
+      },
+      "user_removed_per_file": {
+        "scripts/ratios-to-png.py": 2
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 341,
+      "agent_lines_removed": 56,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 341,
+      "agent_lines_removed": 56,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 341,
+      "agent_lines_removed": 56,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 341,
+      "agent_lines_removed": 56,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 341,
+      "agent_lines_removed": 56,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 343,
+      "agent_lines_removed": 56,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    },
+    {
+      "checkpoint_number": 10,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 345,
+      "agent_lines_removed": 56,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    },
+    {
+      "checkpoint_number": 11,
+      "user_lines_added": 341,
+      "user_lines_removed": 0,
+      "agent_lines_added": 345,
+      "agent_lines_removed": 56,
+      "user_added_per_file": {
+        ".context/IMPROVEMENTS.md": 123,
+        ".context/ratios-macro.csv": 73,
+        ".context/ratios-scatter.csv": 73,
+        ".context/ratios.jsonl": 72
+      }
+    }
+  ]
+}
