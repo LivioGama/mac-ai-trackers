@@ -3,11 +3,8 @@
   "checkpoint_id": "de1dfbdcaee7",
   "strategy": "manual-commit",
   "branch": "claude-desktop-auth-token",
-  "checkpoints_count": 0,
-  "files_touched": [
-    "AIUsagesTrackers/Sources/AIUsagesTrackers/Logging/BaseSanitizers.swift",
-    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/ClaudePayloadSanitizerTests.swift"
-  ],
+  "checkpoints_count": 2,
+  "files_touched": null,
   "sessions": [
     {
       "metadata": "/de/1dfbdcaee7/0/metadata.json",
@@ -17,10 +14,10 @@
     }
   ],
   "token_usage": {
-    "input_tokens": 253,
-    "cache_creation_tokens": 201072,
-    "cache_read_tokens": 3613592,
-    "output_tokens": 15511,
-    "api_call_count": 37
+    "input_tokens": 108,
+    "cache_creation_tokens": 12927,
+    "cache_read_tokens": 1751473,
+    "output_tokens": 11355,
+    "api_call_count": 13
   }
 }
