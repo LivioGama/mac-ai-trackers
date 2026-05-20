@@ -1,0 +1,51 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "de1dfbdcaee7",
+  "session_id": "4c660203-951c-4893-a878-2489127d3511",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-20T10:29:53.884924Z",
+  "branch": "claude-desktop-auth-token",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Logging/BaseSanitizers.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/ClaudePayloadSanitizerTests.swift"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "8b38199d9983",
+  "token_usage": {
+    "input_tokens": 253,
+    "cache_creation_tokens": 201072,
+    "cache_read_tokens": 3613592,
+    "output_tokens": 15511,
+    "api_call_count": 37
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-20T10:29:53.427563Z",
+    "agent_lines": 44,
+    "agent_removed": 14,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 44,
+    "total_lines_changed": 58,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 765,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/attachments/claude-usages-connector.log": 685,
+        ".context/attachments/usages (1).json": 80
+      }
+    }
+  ]
+}
