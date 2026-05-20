@@ -60,14 +60,14 @@ public actor CopilotConnector: UsageConnector {
         } catch {
             logger.log(.error, "Copilot credentials load failed: \(error)")
             _knownAccounts.withLock { $0 = [] }
-            return errorEntries(type: UsageErrorType.tokenError)
+            return errorEntries(type: Self.credentialErrorType(for: error))
         }
 
         _cachedLogin.withLock { $0 = activeLogin }
 
         logger.log(
             .info,
-            "Fetching Copilot usages for \(credentialsList.count) login(s): \(credentialsList.map(\.activeLogin.rawValue).joined(separator: ", "))"
+            "Fetching Copilot usages for \(credentialsList.count) login(s): \(credentialsList.map(\.login.rawValue).joined(separator: ", "))"
         )
 
         var entries = await withTaskGroup(of: VendorUsageEntry?.self) { group in
@@ -131,10 +131,10 @@ public actor CopilotConnector: UsageConnector {
         do {
             (data, response) = try await session.data(for: request)
         } catch {
-            logger.log(.error, "Copilot API request failed for login=\(credentials.activeLogin): \(error)")
+            logger.log(.error, "Copilot API request failed for login=\(credentials.login): \(error)")
             return errorEntry(
                 type: "api_error",
-                login: credentials.activeLogin,
+                login: credentials.login,
                 isActive: credentials.isActive
             )
         }
@@ -142,16 +142,16 @@ public actor CopilotConnector: UsageConnector {
         let httpResponse = response as? HTTPURLResponse
         let httpCode = httpResponse?.statusCode ?? -1
         if httpCode != 200 {
-            logger.log(.debug, "Copilot API response for login=\(credentials.activeLogin): HTTP \(httpCode)")
+            logger.log(.debug, "Copilot API response for login=\(credentials.login): HTTP \(httpCode)")
         }
 
-        let preservedMetrics = preservedMetrics(for: credentials.activeLogin)
+        let preservedMetrics = preservedMetrics(for: credentials.login)
 
         if httpCode == 401 || httpCode == 403 {
-            logger.log(.warning, "Copilot API returned HTTP \(httpCode) for login=\(credentials.activeLogin) — token expired/revoked or missing Copilot entitlement")
+            logger.log(.warning, "Copilot API returned HTTP \(httpCode) for login=\(credentials.login) — token expired/revoked or missing Copilot entitlement")
             return errorEntry(
                 type: UsageErrorType.tokenExpired,
-                login: credentials.activeLogin,
+                login: credentials.login,
                 isActive: credentials.isActive,
                 preservedMetrics: preservedMetrics
             )
@@ -159,37 +159,37 @@ public actor CopilotConnector: UsageConnector {
 
         if httpCode == 429 {
             let bodyPreview = String(data: data.prefix(200), encoding: .utf8) ?? "<non-UTF8 body, \(data.count) bytes>"
-            logger.log(.warning, "Copilot API rate-limited (HTTP 429) for login=\(credentials.activeLogin): \(bodyPreview)")
+            logger.log(.warning, "Copilot API rate-limited (HTTP 429) for login=\(credentials.login): \(bodyPreview)")
             return errorEntry(
                 type: "http_429",
-                login: credentials.activeLogin,
+                login: credentials.login,
                 isActive: credentials.isActive,
                 preservedMetrics: preservedMetrics
             )
         }
 
         guard httpCode == 200 else {
-            logger.log(.error, "Copilot API returned HTTP \(httpCode) for login=\(credentials.activeLogin)")
+            logger.log(.error, "Copilot API returned HTTP \(httpCode) for login=\(credentials.login)")
             return errorEntry(
                 type: "http_\(httpCode)",
-                login: credentials.activeLogin,
+                login: credentials.login,
                 isActive: credentials.isActive
             )
         }
 
-        logger.log(.debug, "Copilot API payload for login=\(credentials.activeLogin): \(Self.maskedPayload(data))")
+        logger.log(.debug, "Copilot API payload for login=\(credentials.login): \(Self.maskedPayload(data))")
 
         do {
             let parsed = try parseAPIResponse(data)
-            let account = parsed.login.map(AccountEmail.init(rawValue:)) ?? credentials.activeLogin
-            if parsed.login != nil, parsed.login != credentials.activeLogin.rawValue {
+            let account = parsed.login.map(AccountEmail.init(rawValue:)) ?? credentials.login
+            if parsed.login != nil, parsed.login != credentials.login.rawValue {
                 logger.log(
                     .debug,
-                    "Copilot API login=\(account) differs from credential login=\(credentials.activeLogin)"
+                    "Copilot API login=\(account) differs from credential login=\(credentials.login)"
                 )
             }
             let isActive = account == activeLogin
-            storeMetrics(parsed.metrics, for: account, alias: credentials.activeLogin)
+            storeMetrics(parsed.metrics, for: account, alias: credentials.login)
             logger.log(.info, "Copilot fetched \(parsed.metrics.count) metric(s) for login=\(account)")
             return VendorUsageEntry(
                 vendor: vendor,
@@ -200,11 +200,11 @@ public actor CopilotConnector: UsageConnector {
                 metrics: parsed.metrics
             )
         } catch {
-            logger.log(.error, "Copilot response parse failed for login=\(credentials.activeLogin): \(error)")
+            logger.log(.error, "Copilot response parse failed for login=\(credentials.login): \(error)")
             logger.log(.warning, "Copilot failed payload dump: \(Self.maskedPayload(data))")
             return errorEntry(
                 type: "parse_error",
-                login: credentials.activeLogin,
+                login: credentials.login,
                 isActive: credentials.isActive
             )
         }
@@ -356,7 +356,24 @@ public actor CopilotConnector: UsageConnector {
             logger.log(.warning, "Copilot identity_unresolved during \(type) — no usage entry written")
             return []
         }
-        return [errorEntry(type: type, login: account, isActive: false)]
+        return [errorEntry(
+            type: type,
+            login: account,
+            isActive: true,
+            preservedMetrics: preservedMetrics(for: account)
+        )]
+    }
+
+    private static func credentialErrorType(for error: Error) -> String {
+        guard let error = error as? CopilotCredentialLocatorError else {
+            return UsageErrorType.credentialError
+        }
+        switch error {
+        case .notLoggedIn, .noTokenAvailable:
+            return UsageErrorType.tokenError
+        case .hostsFileReadFailed, .hostsFileParseFailed, .keychainAccessDenied, .keychainTimeout, .keychainParseFailed:
+            return UsageErrorType.credentialError
+        }
     }
 
     private func errorEntry(

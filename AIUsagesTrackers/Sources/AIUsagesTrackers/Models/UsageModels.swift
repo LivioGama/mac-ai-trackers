@@ -87,6 +87,7 @@ public struct UsageError: Codable, Equatable, Sendable {
 /// Stable error-type strings written to `usages.json` and matched by merge/UI logic.
 public enum UsageErrorType: Sendable {
     public static let tokenError = "token_error"
+    public static let credentialError = "credential_error"
     public static let tokenExpired = "token_expired"
 }
 

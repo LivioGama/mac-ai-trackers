@@ -4,6 +4,7 @@ public protocol UsageConnector: Sendable {
     var vendor: Vendor { get }
     func fetchUsages() async throws -> [VendorUsageEntry]
     func resolveActiveAccount() -> AccountEmail?
+    func knownAccounts() -> [AccountEmail]
 }
 
 public extension UsageConnector {

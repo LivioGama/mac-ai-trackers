@@ -8,19 +8,19 @@ public struct CopilotCredentials: Sendable, Equatable {
     /// `AccountEmail` because the rest of the app keys accounts by that type;
     /// for Copilot the login string is the natural per-account identity since
     /// the `copilot_internal/user` endpoint exposes no email.
-    public let activeLogin: AccountEmail
+    public let login: AccountEmail
     public let tokenSource: TokenSource
     /// Whether this login is the currently-active `gh` account in `hosts.yml`.
     public let isActive: Bool
 
     public init(
         accessToken: String,
-        activeLogin: AccountEmail,
+        login: AccountEmail,
         tokenSource: TokenSource,
         isActive: Bool = true
     ) {
         self.accessToken = accessToken
-        self.activeLogin = activeLogin
+        self.login = login
         self.tokenSource = tokenSource
         self.isActive = isActive
     }
@@ -87,8 +87,6 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
     private let logger: FileLogger
     private let processRunner: ProcessRunning
     private let session: URLSession
-    /// Token from an unscoped keychain lookup, keyed by login from `/user`.
-    private var unscopedKeychainCredential: (login: String, token: String)?
 
     public init(
         environment: [String: String] = ProcessInfo.processInfo.environment,
@@ -108,7 +106,7 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
 
     public func locate() async throws -> CopilotCredentials {
         let batch = try await locateAll()
-        guard let active = batch.credentials.first(where: { $0.activeLogin == batch.activeLogin }) else {
+        guard let active = batch.credentials.first(where: { $0.login == batch.activeLogin }) else {
             throw CopilotCredentialLocatorError.noTokenAvailable(activeLogin: batch.activeLogin.rawValue)
         }
         return active
@@ -122,17 +120,21 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
         }
         let activeLogin = AccountEmail(rawValue: activeLoginString)
 
-        unscopedKeychainCredential = nil
-        let logins = try await discoverLogins(from: parsed.config)
+        let discovery = try await discoverLogins(from: parsed.config)
         var credentials: [CopilotCredentials] = []
-        for login in logins {
+        for login in discovery.logins {
             let isActive = login == activeLoginString
-            guard let resolved = try await resolveToken(for: login, config: parsed.config, isActiveLogin: isActive) else {
+            guard let resolved = try await resolveToken(
+                for: login,
+                config: parsed.config,
+                isActiveLogin: isActive,
+                unscopedKeychainCredential: discovery.unscopedKeychainCredential
+            ) else {
                 continue
             }
             credentials.append(CopilotCredentials(
                 accessToken: resolved.token,
-                activeLogin: AccountEmail(rawValue: login),
+                login: AccountEmail(rawValue: login),
                 tokenSource: resolved.source,
                 isActive: isActive
             ))
@@ -152,14 +154,23 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
         return logins.sorted()
     }
 
-    private func discoverLogins(from config: HostsConfig) async throws -> [String] {
+    private struct LoginDiscovery {
+        let logins: [String]
+        let unscopedKeychainCredential: (login: String, token: String)?
+    }
+
+    private func discoverLogins(from config: HostsConfig) async throws -> LoginDiscovery {
         var logins = Set(Self.knownLogins(from: config))
+        var unscopedKeychainCredential: (login: String, token: String)?
         if let keychainToken = try await tryLoadKeychainToken(),
            let keychainLogin = await loginForToken(keychainToken) {
             logins.insert(keychainLogin)
             unscopedKeychainCredential = (keychainLogin, keychainToken)
         }
-        return logins.sorted()
+        return LoginDiscovery(
+            logins: logins.sorted(),
+            unscopedKeychainCredential: unscopedKeychainCredential
+        )
     }
 
     private func loginForToken(_ token: String) async -> String? {
@@ -201,7 +212,8 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
     private func resolveToken(
         for login: String,
         config: HostsConfig,
-        isActiveLogin: Bool
+        isActiveLogin: Bool,
+        unscopedKeychainCredential: (login: String, token: String)?
     ) async throws -> (token: String, source: TokenSource)? {
         if isActiveLogin,
            let envToken = environment[Self.envVarName],
@@ -293,7 +305,7 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
         )
     }
 
-    private static func candidatePaths(
+    public static func candidatePaths(
         environment: [String: String],
         hostsFilePathOverride: String?,
         fileManager: FileManager

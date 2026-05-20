@@ -228,7 +228,7 @@ struct CopilotAuthTests {
         let credentials = try await auth.locate()
         #expect(credentials.accessToken == "env_token")
         #expect(credentials.tokenSource == .envVar)
-        #expect(credentials.activeLogin.rawValue == "alice")
+        #expect(credentials.login.rawValue == "alice")
     }
 
     @Test("load() falls back to keychain when env var is unset")
@@ -249,7 +249,7 @@ struct CopilotAuthTests {
         let credentials = try await auth.locate()
         #expect(credentials.accessToken == "kc_token")
         #expect(credentials.tokenSource == .keychain)
-        #expect(credentials.activeLogin.rawValue == "bob")
+        #expect(credentials.login.rawValue == "bob")
     }
 
     @Test("load() decodes go-keyring-base64 prefix from keychain output")
@@ -373,8 +373,8 @@ struct CopilotAuthTests {
         let all = batch.credentials
         #expect(all.count == 2)
 
-        let alice = try #require(all.first { $0.activeLogin.rawValue == "alice" })
-        let bob = try #require(all.first { $0.activeLogin.rawValue == "bob" })
+        let alice = try #require(all.first { $0.login.rawValue == "alice" })
+        let bob = try #require(all.first { $0.login.rawValue == "bob" })
         #expect(alice.accessToken == "gho_alice_token")
         #expect(alice.tokenSource == .hostsFile)
         #expect(alice.isActive == false)
@@ -410,8 +410,8 @@ struct CopilotAuthTests {
         let batch = try await auth.locateAll()
         #expect(batch.credentials.count == 2)
 
-        let gama = try #require(batch.credentials.first { $0.activeLogin.rawValue == "LivioGama" })
-        let mnc = try #require(batch.credentials.first { $0.activeLogin.rawValue == "LivioMNC" })
+        let gama = try #require(batch.credentials.first { $0.login.rawValue == "LivioGama" })
+        let mnc = try #require(batch.credentials.first { $0.login.rawValue == "LivioMNC" })
         #expect(gama.accessToken == "gama_token")
         #expect(gama.tokenSource == .keychain)
         #expect(gama.isActive == true)
@@ -486,7 +486,7 @@ struct CopilotAuthTests {
 
         let batch = try await auth.locateAll()
         #expect(batch.credentials.count == 1)
-        #expect(batch.credentials[0].activeLogin.rawValue == "bob")
+        #expect(batch.credentials[0].login.rawValue == "bob")
         #expect(batch.credentials[0].accessToken == "gho_shared_token")
     }
 }

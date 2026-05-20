@@ -58,7 +58,32 @@ private struct MockCopilotAuth: CopilotCredentialLocating {
 
     func locateAll() async throws -> (activeLogin: AccountEmail, credentials: [CopilotCredentials]) {
         if let error { throw error }
-        let active = credentials.first(where: \.isActive)?.activeLogin ?? credentials[0].activeLogin
+        let active = credentials.first(where: \.isActive)?.login ?? credentials[0].login
+        return (active, credentials)
+    }
+}
+
+private actor SwitchingCopilotAuth: CopilotCredentialLocating {
+    let credentials: [CopilotCredentials]
+    let secondError: Error
+    private var locateAllCalls = 0
+
+    init(credentials: CopilotCredentials, secondError: Error) {
+        self.credentials = [credentials]
+        self.secondError = secondError
+    }
+
+    func locate() async throws -> CopilotCredentials {
+        let batch = try await locateAll()
+        return batch.credentials[0]
+    }
+
+    func locateAll() async throws -> (activeLogin: AccountEmail, credentials: [CopilotCredentials]) {
+        defer { locateAllCalls += 1 }
+        if locateAllCalls > 0 {
+            throw secondError
+        }
+        let active = credentials.first(where: \.isActive)?.login ?? credentials[0].login
         return (active, credentials)
     }
 }
@@ -80,7 +105,7 @@ private func mockSession() -> URLSession {
 private func validCredentials(login: String = "fcamblor", token: String = "fake-token", isActive: Bool = true) -> CopilotCredentials {
     CopilotCredentials(
         accessToken: token,
-        activeLogin: AccountEmail(rawValue: login),
+        login: AccountEmail(rawValue: login),
         tokenSource: .keychain,
         isActive: isActive
     )
@@ -379,6 +404,32 @@ struct CopilotConnectorFetchTests {
         let entries = try await connector.fetchUsages()
         // No cached login on first call → no entry written (matches Codex pattern)
         #expect(entries.isEmpty)
+    }
+
+    @Test("Transient credential lookup error uses credential_error and preserves metrics")
+    func transientCredentialErrorPreservesMetrics() async throws {
+        let dir = try makeTempDir()
+        let logger = FileLogger(filePath: "\(dir)/test.log", minLevel: .debug)
+        let auth = SwitchingCopilotAuth(
+            credentials: validCredentials(),
+            secondError: CopilotCredentialLocatorError.keychainTimeout(timeoutSeconds: 10)
+        )
+        let connector = CopilotConnector(auth: auth, logger: logger, session: mockSession())
+
+        mockHTTP(status: 200, json: """
+        {
+          "quota_snapshots": {
+            "premium_interactions": { "percent_remaining": 70, "unlimited": false }
+          }
+        }
+        """)
+        _ = try await connector.fetchUsages()
+
+        let entries = try await connector.fetchUsages()
+        let entry = try #require(entries.first)
+        #expect(entry.lastError?.type == UsageErrorType.credentialError)
+        #expect(entry.isActive == true)
+        #expect(entry.metrics.count == 1)
     }
 
     @Test("invalidateLoginCache clears resolveActiveAccount")

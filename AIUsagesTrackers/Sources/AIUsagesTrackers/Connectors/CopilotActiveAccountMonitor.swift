@@ -99,18 +99,10 @@ public actor CopilotActiveAccountMonitor: ActiveAccountMonitoring {
     }
 
     private func hostsFileCandidatePaths() -> [String] {
-        if let override = hostsFilePathOverride {
-            return [override]
-        }
-        let home = fileManager.homeDirectoryForCurrentUser.path
-        var paths: [String] = []
-        if let ghConfigDir = environment["GH_CONFIG_DIR"], !ghConfigDir.isEmpty {
-            paths.append("\(ghConfigDir)/hosts.yml")
-        }
-        if let xdg = environment["XDG_CONFIG_HOME"], !xdg.isEmpty {
-            paths.append("\(xdg)/gh/hosts.yml")
-        }
-        paths.append("\(home)/.config/gh/hosts.yml")
-        return paths
+        CopilotCredentialLocator.candidatePaths(
+            environment: environment,
+            hostsFilePathOverride: hostsFilePathOverride,
+            fileManager: fileManager
+        )
     }
 }
