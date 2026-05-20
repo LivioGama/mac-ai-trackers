@@ -1,0 +1,64 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "9adf4a90c0d8",
+  "session_id": "4c660203-951c-4893-a878-2489127d3511",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-20T10:44:19.999641Z",
+  "branch": "claude-desktop-auth-token",
+  "checkpoints_count": 3,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "efe98e956694",
+  "token_usage": {
+    "input_tokens": 469,
+    "cache_creation_tokens": 224864,
+    "cache_read_tokens": 7299797,
+    "output_tokens": 32362,
+    "api_call_count": 63
+  },
+  "session_metrics": {
+    "turn_count": 5
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 807,
+      "user_lines_removed": 53,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/attachments/claude-usages-connector.log": 685,
+        ".context/attachments/usages (1).json": 80,
+        ".serena/.gitignore": 2,
+        ".serena/project.yml": 40
+      },
+      "user_removed_per_file": {
+        ".serena/project.yml": 53
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 807,
+      "user_lines_removed": 53,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".context/attachments/claude-usages-connector.log": 685,
+        ".context/attachments/usages (1).json": 80,
+        ".serena/.gitignore": 2,
+        ".serena/project.yml": 40
+      },
+      "user_removed_per_file": {
+        ".serena/project.yml": 53
+      }
+    }
+  ]
+}
