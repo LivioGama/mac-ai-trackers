@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "ad8ed00d4109",
+  "strategy": "manual-commit",
+  "branch": "fix/claude-multiple-keychain-entries",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "docs/vendors/claude.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ad/8ed00d4109/0/metadata.json",
+      "transcript": "/ad/8ed00d4109/0/full.jsonl",
+      "content_hash": "/ad/8ed00d4109/0/content_hash.txt",
+      "prompt": "/ad/8ed00d4109/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 15,
+    "cache_creation_tokens": 12416,
+    "cache_read_tokens": 1627046,
+    "output_tokens": 3357,
+    "api_call_count": 13
+  }
+}
