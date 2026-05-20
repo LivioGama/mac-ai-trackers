@@ -142,26 +142,61 @@ public struct SecretPatternSanitizer: Sendable {
 public struct EmailPatternSanitizer: Sendable {
     public static let placeholder = "<email>"
 
-    /// `NSRegularExpression` is documented thread-safe (Apple Foundation
-    /// reference) — Swift's native `Regex<...>` isn't `Sendable`, which
-    /// would force per-call recompilation or actor isolation. The literal
-    /// pattern is a conservative shape: RFC 5322 is intractable with a
-    /// regex, the goal is to catch every realistic vendor-emitted email
-    /// with no false negatives, accepting some false positives (e.g.
-    /// version strings containing `@`) that only affect log readability.
     private static let pattern: NSRegularExpression = {
-        // swiftlint:disable:next force_try
         try! NSRegularExpression(pattern: #"[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"#)
     }()
 
     public init() {}
 
     public func sanitize(_ message: String) -> String {
+        let nsMessage = message as NSString
         let range = NSRange(message.startIndex..<message.endIndex, in: message)
-        return Self.pattern.stringByReplacingMatches(
-            in: message,
-            range: range,
-            withTemplate: Self.placeholder
-        )
+
+        var result: String = ""
+        var lastEndIndex = 0
+
+        Self.pattern.enumerateMatches(in: message, range: range) { match, _, _ in
+            guard let match = match else { return }
+
+            let matchRange = match.range
+            result += nsMessage.substring(with: NSRange(location: lastEndIndex, length: matchRange.location - lastEndIndex))
+
+            let emailFound = nsMessage.substring(with: matchRange)
+            result += maskEmail(emailFound)
+
+            lastEndIndex = matchRange.location + matchRange.length
+        }
+
+        if lastEndIndex < nsMessage.length {
+            result += nsMessage.substring(with: NSRange(location: lastEndIndex, length: nsMessage.length - lastEndIndex))
+        }
+
+        return result
+    }
+
+    private func maskEmail(_ email: String) -> String {
+        guard email.count > 4, email.contains("@") else { return Self.placeholder }
+
+        let first2 = String(email.prefix(2))
+        let last2 = String(email.suffix(2))
+
+        guard let atIndex = email.firstIndex(of: "@") else { return Self.placeholder }
+
+        let beforeAtCount = email.distance(from: email.startIndex, to: atIndex) - 2
+        let beforeAsterisks = String(repeating: "*", count: max(0, beforeAtCount))
+
+        let afterAtStart = email.index(after: atIndex)
+        let afterAtCount = email.distance(from: afterAtStart, to: email.endIndex) - 2
+        let afterAsterisks = String(repeating: "*", count: max(0, afterAtCount))
+
+        return first2 + beforeAsterisks + "@" + afterAsterisks + last2
+    }
+
+    private func maskPart(_ part: String) -> String {
+        guard part.count > 4 else { return part }
+
+        let first2 = String(part.prefix(2))
+        let last2 = String(part.suffix(2))
+        return first2 + "***" + last2
     }
 }

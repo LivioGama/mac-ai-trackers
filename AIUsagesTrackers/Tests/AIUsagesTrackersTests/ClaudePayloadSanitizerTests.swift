@@ -52,6 +52,6 @@ struct ClaudePayloadSanitizerLeakageTests {
     func emailMasked() {
         let sanitizer = ClaudePayloadSanitizer()
         let masked = sanitizer.sanitize("Contact victim-seeded@example.com for help")
-        #expect(masked == "Contact <email> for help")
+        #expect(masked == "Contact vi***********@*********om for help")
     }
 }
