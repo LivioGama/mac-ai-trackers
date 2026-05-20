@@ -1,0 +1,6 @@
+dans le texte, remplace
+"Higher ratio = more 5h saturations needed before 7d resets"
+par
+"Higher ratio = more 5h saturations needed before 7d saturates" (ou équivalent)
+
+Pour la seconde remarque (more reliable ratio), il faudrait préciser que c'est dû aux plus grands nombres qui gomment les arrondis
