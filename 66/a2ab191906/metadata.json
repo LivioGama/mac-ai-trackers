@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "66a2ab191906",
+  "strategy": "manual-commit",
+  "branch": "fix/claude-multiple-keychain-entries",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "AIUsagesTrackers/Sources/AIUsagesTrackers/Connectors/ClaudeCredentialLocator.swift",
+    "AIUsagesTrackers/Tests/AIUsagesTrackersTests/ClaudeCredentialLocatorTests.swift",
+    "docs/vendors/claude.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/66/a2ab191906/0/metadata.json",
+      "transcript": "/66/a2ab191906/0/full.jsonl",
+      "content_hash": "/66/a2ab191906/0/content_hash.txt",
+      "prompt": "/66/a2ab191906/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 32,
+    "cache_creation_tokens": 64079,
+    "cache_read_tokens": 1115485,
+    "output_tokens": 23465,
+    "api_call_count": 26
+  }
+}
