@@ -267,8 +267,8 @@ copy them from the sticky build comment.
 - **Transition**: `phase:testing` → `phase:merge-ready`.
 - **Skill**: `assistant-merge` — re-verifies gates before acting.
 - **Outputs**:
-  - User-facing artefacts updated **on the PR before squash-merging**, so
-    they ship in the same commit as the code:
+  - User-facing artefacts updated **on the PR branch before merging**, so
+    they ship with the code:
     - **`type:new-assistant`** — every README touchpoint that
       enumerates supported vendors must list the new one. At minimum:
       - append a vendor subsection to README's "Supported Assistants"
@@ -284,25 +284,23 @@ copy them from the sticky build comment.
     - **`type:vendor-evolution`** — no README change. For
       `kind:breaking`, ensure the README's compatibility note (or the
       `Min app version` annotation in the vendor doc) is reflected.
-  - Release-notes text drafted and embedded in the squash-merge commit
-    **body** (not the title). This text is the single source of truth
-    consumed at release time by the maintainer (or by a future
-    release-engineering workflow) when aggregating commit bodies into
-    the GitHub release notes. Required content:
+  - Release-notes text drafted and posted as a comment on the issue. This
+    text is the single source of truth consumed at release time by the
+    maintainer (or by a future release-engineering workflow) when
+    aggregating release notes across merged PRs. Required content:
     - All types — credit testers by handle.
     - `kind:breaking` — prefix with
       `BREAKING: <vendor> connector requires <next-version>+` and
       explain what users on older versions will see.
     - `kind:urgent-fix` — affected subset, since when, what the fix
       does.
-  - PR squash-merged with the standard commit convention; for
-    `kind:breaking`, the title carries the `!` Conventional Commits
-    marker.
+  - PR merged with the standard workflow, preserving the commit history
+    from the PR branch.
 - **Exit**: PR merged.
 
 #### 3.1.7 Merged (terminal for the skill family)
 
-- **Trigger**: PR squash-merged.
+- **Trigger**: PR merged.
 - **Transition**: `phase:merge-ready` → `phase:merged` (set by
   `assistant-merge` immediately after the merge).
 - **Outputs**: PR closed; the `Closes #<issue>` link still resolved (issue

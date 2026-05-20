@@ -1,6 +1,6 @@
 ---
 name: assistant-merge
-description: Verify gates one last time and squash-merge an assistant PR (new-assistant or vendor-evolution). Use when the issue is at phase:merge-ready.
+description: Verify gates one last time and merge an assistant PR (new-assistant or vendor-evolution). Use when the issue is at phase:merge-ready.
 model: sonnet
 ---
 
@@ -113,18 +113,18 @@ Required content per type/kind, see `docs/ASSISTANT-ONBOARDING.md`
 
 Show the draft to the user for sign-off before Phase E.
 
-### Phase E — Squash-merge
+### Phase E — Merge
 
-Use the standard commit convention from `docs/GIT-CONVENTIONS.md`. For
-`kind:breaking`, ensure the commit title carries the `!` Conventional
-Commits breaking marker. Embed the release-notes draft from Phase D as
-the **body** of the squash-merge commit:
+The PR branch already contains the user-facing commits (from Phase C).
+Merge with the standard workflow:
 
 ```sh
-gh pr merge <pr> --squash \
-  --subject "<conventional title>" \
-  --body "<release-notes draft from Phase D>"
+gh pr merge <pr> --merge
 ```
+
+The release-notes draft from Phase D will be posted separately as a
+comment on the issue (see Phase F below), to be aggregated into the
+GitHub release notes when the maintainer cuts a tag.
 
 ### Phase F — Apply `phase:merged`
 
