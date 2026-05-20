@@ -289,9 +289,9 @@ struct CopilotConnectorFetchTests {
 
         let entries = try await connector.fetchUsages()
         let entry = try #require(entries.first)
-        #expect(entry.lastError?.type == "token_expired")
+        #expect(entry.lastError?.type == UsageErrorType.tokenExpired)
         #expect(entry.account.rawValue == "fcamblor")
-        #expect(entry.isActive == false)
+        #expect(entry.isActive == true)
         #expect(entry.metrics.isEmpty)
     }
 
@@ -315,6 +315,28 @@ struct CopilotConnectorFetchTests {
         let entries = try await connector.fetchUsages()
         let entry = try #require(entries.first)
         #expect(entry.lastError?.type == "http_429")
+        #expect(entry.isActive == true)
+        #expect(entry.metrics.count == 1)
+    }
+
+    @Test("HTTP 401 preserves last known metrics for the active login")
+    func http401PreservesMetrics() async throws {
+        let dir = try makeTempDir()
+        let connector = makeConnector(dir: dir)
+
+        mockHTTP(status: 200, json: """
+        {
+          "quota_snapshots": {
+            "premium_interactions": { "percent_remaining": 70, "unlimited": false }
+          }
+        }
+        """)
+        _ = try await connector.fetchUsages()
+
+        mockHTTP(status: 401, json: "{\"message\":\"Bad credentials\"}")
+        let entries = try await connector.fetchUsages()
+        let entry = try #require(entries.first)
+        #expect(entry.lastError?.type == UsageErrorType.tokenExpired)
         #expect(entry.isActive == true)
         #expect(entry.metrics.count == 1)
     }

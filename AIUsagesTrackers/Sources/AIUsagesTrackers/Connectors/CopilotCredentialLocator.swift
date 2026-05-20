@@ -209,8 +209,12 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
             return (envToken, .envVar)
         }
 
-        if let hostsToken = config.tokenForLogin(login) {
-            return (hostsToken, .hostsFile)
+        if let perUserToken = config.perUserTokens[login] {
+            return (perUserToken, .hostsFile)
+        }
+
+        if isActiveLogin, let hostLevelToken = config.hostLevelToken {
+            return (hostLevelToken, .hostsFile)
         }
 
         if let keychainToken = try await tryLoadKeychainToken(for: login) {

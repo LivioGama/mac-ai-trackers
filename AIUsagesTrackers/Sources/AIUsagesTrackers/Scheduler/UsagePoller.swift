@@ -97,6 +97,10 @@ public actor UsagePoller {
         let entries: [VendorUsageEntry] = await withTaskGroup(of: [VendorUsageEntry].self) { group in
             for connector in connectors {
                 let cachedForVendor = usagesByVendor[connector.vendor] ?? []
+                var cacheByAccount: [AccountEmail: VendorUsageEntry] = [:]
+                for entry in cachedForVendor {
+                    cacheByAccount[entry.account] = entry
+                }
                 let knownAccounts = connector.knownAccounts()
                 let accountsToCheck: [AccountEmail]
                 if knownAccounts.isEmpty {
@@ -109,8 +113,7 @@ public actor UsagePoller {
                     shouldSkip = false
                 } else {
                     shouldSkip = accountsToCheck.allSatisfy { account in
-                        guard let cached = cachedForVendor.first(where: { $0.account == account }),
-                              let acquiredDate = cached.lastAcquiredOn?.date else {
+                        guard let acquiredDate = cacheByAccount[account]?.lastAcquiredOn?.date else {
                             return false
                         }
                         return now.timeIntervalSince(acquiredDate) < intervalSeconds
@@ -118,7 +121,7 @@ public actor UsagePoller {
                 }
                 if shouldSkip {
                     let age = accountsToCheck.compactMap { account in
-                        cachedForVendor.first(where: { $0.account == account })?.lastAcquiredOn?.date
+                        cacheByAccount[account]?.lastAcquiredOn?.date
                     }.map { Int(now.timeIntervalSince($0)) }.max()
                     logger.log(
                         .debug,

@@ -60,7 +60,7 @@ public actor CopilotConnector: UsageConnector {
         } catch {
             logger.log(.error, "Copilot credentials load failed: \(error)")
             _knownAccounts.withLock { $0 = [] }
-            return errorEntries(type: "token_error")
+            return errorEntries(type: UsageErrorType.tokenError)
         }
 
         _cachedLogin.withLock { $0 = activeLogin }
@@ -104,7 +104,7 @@ public actor CopilotConnector: UsageConnector {
             "Copilot active login=\(activeLogin) has no usable token — run `gh auth switch` or `gh auth login`"
         )
         return errorEntry(
-            type: "token_error",
+            type: UsageErrorType.tokenError,
             login: activeLogin,
             isActive: true,
             preservedMetrics: []
@@ -150,9 +150,10 @@ public actor CopilotConnector: UsageConnector {
         if httpCode == 401 || httpCode == 403 {
             logger.log(.warning, "Copilot API returned HTTP \(httpCode) for login=\(credentials.activeLogin) — token expired/revoked or missing Copilot entitlement")
             return errorEntry(
-                type: "token_expired",
+                type: UsageErrorType.tokenExpired,
                 login: credentials.activeLogin,
-                isActive: false
+                isActive: credentials.isActive,
+                preservedMetrics: preservedMetrics
             )
         }
 

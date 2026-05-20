@@ -467,4 +467,26 @@ struct CopilotAuthTests {
             }
         }
     }
+
+    @Test("locateAll() assigns host-level oauth_token only to the active login")
+    func locateAllHostLevelTokenActiveOnly() async throws {
+        let dir = try makeTempDir()
+        let hostsPath = try writeHostsYAML("""
+        github.com:
+            users:
+                alice:
+                bob:
+            user: bob
+            oauth_token: gho_shared_token
+        """, in: dir)
+        let auth = try makeAuth(
+            hostsPath: hostsPath,
+            keychainRunner: MockProcessRunner(failureExitCode: 44)
+        )
+
+        let batch = try await auth.locateAll()
+        #expect(batch.credentials.count == 1)
+        #expect(batch.credentials[0].activeLogin.rawValue == "bob")
+        #expect(batch.credentials[0].accessToken == "gho_shared_token")
+    }
 }

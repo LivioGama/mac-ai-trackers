@@ -289,13 +289,13 @@ struct UsagesFileManagerTests {
 
         let errorEntry = VendorUsageEntry(
             vendor: "copilot", account: "LivioGama", isActive: true,
-            lastError: UsageError(timestamp: "2026-04-17T15:00:00+00:00", type: "token_error"),
+            lastError: UsageError(timestamp: "2026-04-17T15:00:00+00:00", type: UsageErrorType.tokenError),
             metrics: []
         )
         await mgr.update(with: [errorEntry])
 
         let result = await mgr.read()
-        #expect(result.usages[0].lastError?.type == "token_error")
+        #expect(result.usages[0].lastError?.type == UsageErrorType.tokenError)
         #expect(result.usages[0].metrics.isEmpty)
     }
 

@@ -161,7 +161,7 @@ public actor UsagesFileManager {
             }
             let key = "\(entry.vendor.rawValue)|\(entry.account.rawValue)"
             if let idx = indexByKey[key] {
-                if entry.lastError?.type == "token_error" {
+                if entry.lastError?.type == UsageErrorType.tokenError {
                     usages[idx] = entry
                 } else if entry.lastError != nil {
                     // Errors must not erase previously acquired data: the file may hold good
