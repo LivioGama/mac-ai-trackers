@@ -4,29 +4,78 @@ Utility scripts for the `mac-ai-trackers` project.
 
 ## 5h <-> 7d ratio analysis pipeline
 
-These three scripts analyze the JSONL files produced by `ai-usages-tracker`
+These scripts analyze the JSONL files produced by `ai-usages-tracker`
 to estimate, per account, **how many times the 5h window must be saturated
 to saturate the 7d window** (= macro ratio). They produce CSV and PNG outputs.
 
-### Overview
+### Quick start
+
+```bash
+# One-command pipeline (all 3 steps, auto-detects accounts):
+./scripts/generate-ratios.sh
+
+# With custom account labels/colors:
+./scripts/generate-ratios.sh --accounts-config scripts/accounts.example.json
+
+# Fast mode (skip PNG generation):
+./scripts/generate-ratios.sh --skip-png
+```
+
+Output files appear in `/tmp/` by default. To use a different location:
+
+```bash
+./scripts/generate-ratios.sh --out-dir /path/to/output
+```
+
+### Overview (detailed pipeline)
 
 ```
 ~/.cache/ai-usages-tracker/usage-history/<year>/<month>/*.jsonl
     |
-    |  analyze-token-ratios.py   (step 1)
+    |  analyze-token-ratios.py   (step 1: extract monotonic ranges)
     v
 ratios.jsonl   (1 line = 1 strictly monotonic range, with macro ratio + steps)
     |
-    |  ratios-to-csv.py          (step 2)
+    |  ratios-to-csv.py          (step 2: convert to CSV)
     v
 ratios-macro.csv     ratios-scatter.csv
     |                        |
-    |     ratios-to-png.py   |   (step 3, optional)
+    |     ratios-to-png.py   |   (step 3: generate charts)
     v                        v
 ratios-macro.png        ratios-scatter.png
 ```
 
-### Step 1 — Extract monotonic ranges
+Orchestrated by: **`generate-ratios.sh`** (recommended)
+
+### Customizing account labels and colors
+
+By default, `generate-ratios.sh` auto-detects accounts from the data and assigns
+colors from a default palette. To customize display names and colors:
+
+1. **Copy the example config:**
+   ```bash
+   cp scripts/accounts.example.json accounts.json
+   ```
+
+2. **Edit `accounts.json`** with your preferred labels and hex colors:
+   ```json
+   {
+     "claude:fcamblor@gmail.com": ["Claude (personal)", "#3b82f6"],
+     "claude:frederic.camblor@4sh.fr": ["Claude (work)", "#ec4899"],
+     "codex:fcamblor@gmail.com": ["Codex Plus", "#10b981"]
+   }
+   ```
+
+3. **Regenerate charts:**
+   ```bash
+   ./scripts/generate-ratios.sh --accounts-config accounts.json
+   ```
+
+### Manual step-by-step execution
+
+If you prefer to run each step individually:
+
+#### Step 1 — Extract monotonic ranges
 
 ```bash
 ./scripts/analyze-token-ratios.py ~/.cache/ai-usages-tracker/usage-history/2026/ \
@@ -97,20 +146,22 @@ Options:
   (default +2 = CEST).
 - `--prefix PATH` : output file prefix (default: `ratios`).
 
-### Step 3 — PNG (optional)
+#### Step 3 — PNG charts (optional)
 
-Requires `matplotlib`. Recommended setup with a throwaway venv via `uv`:
-
-```bash
-uv venv /tmp/venv-plot
-uv pip install --python /tmp/venv-plot/bin/python matplotlib
-```
-
-Then:
+Requires `matplotlib`. The `generate-ratios.sh` script handles this automatically,
+but for manual execution:
 
 ```bash
-/tmp/venv-plot/bin/python ./scripts/ratios-to-png.py /tmp/ratios
-# -> /tmp/ratios-macro.png and /tmp/ratios-scatter.png
+# If not already created, set up the venv once:
+uv venv /tmp/venv-ratios
+uv pip install --python /tmp/venv-ratios/bin/python matplotlib
+
+# Generate PNGs (auto-detects accounts from CSV):
+/tmp/venv-ratios/bin/python ./scripts/ratios-to-png.py /tmp/ratios
+
+# Or with custom account labels:
+/tmp/venv-ratios/bin/python ./scripts/ratios-to-png.py /tmp/ratios \
+    --accounts-config accounts.json
 ```
 
 Chart features:
@@ -121,17 +172,6 @@ Chart features:
   small point = little progression, ratio is heavily biased by integer rounding).
 - "US peak hours" shaded bands on the hour-of-day scatter (15:00-01:00 Paris CEST).
 - Legends placed outside the plot area to avoid hiding data points.
-
-To adapt colors/labels to your own accounts, edit the `SERIES` dict at the
-top of `ratios-to-png.py`:
-
-```python
-SERIES = {
-    "claude:personal@example.com":  ("Claude Pro",            "#3b82f6"),
-    "claude:work@example.com":      ("Claude Teams Premium",  "#ec4899"),
-    "codex:personal@example.com":   ("Codex Plus",            "#10b981"),
-}
-```
 
 ## Reading the results
 
