@@ -1,0 +1,3 @@
+je suis pas fan du -a "$USER" qui me semble très fragile et dépendant de l'implémentation de claude code
+
+N'est-il pas possible de query le keychain pour récupérer TOUTES les entrées "Claude Code-credentials" ?
