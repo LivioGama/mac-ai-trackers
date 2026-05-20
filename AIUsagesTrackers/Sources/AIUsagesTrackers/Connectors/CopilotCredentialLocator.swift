@@ -4,17 +4,25 @@ import Foundation
 
 public struct CopilotCredentials: Sendable, Equatable {
     public let accessToken: String
-    /// The currently-active GitHub login (e.g. `"fcamblor"`). Wrapped in
+    /// The GitHub login this token belongs to (e.g. `"fcamblor"`). Wrapped in
     /// `AccountEmail` because the rest of the app keys accounts by that type;
     /// for Copilot the login string is the natural per-account identity since
     /// the `copilot_internal/user` endpoint exposes no email.
     public let activeLogin: AccountEmail
     public let tokenSource: TokenSource
+    /// Whether this login is the currently-active `gh` account in `hosts.yml`.
+    public let isActive: Bool
 
-    public init(accessToken: String, activeLogin: AccountEmail, tokenSource: TokenSource) {
+    public init(
+        accessToken: String,
+        activeLogin: AccountEmail,
+        tokenSource: TokenSource,
+        isActive: Bool = true
+    ) {
         self.accessToken = accessToken
         self.activeLogin = activeLogin
         self.tokenSource = tokenSource
+        self.isActive = isActive
     }
 }
 
@@ -26,7 +34,11 @@ public enum TokenSource: String, Sendable, Equatable {
 
 // MARK: - Protocol
 
-public protocol CopilotCredentialLocating: CredentialLocator where Credentials == CopilotCredentials {}
+public protocol CopilotCredentialLocating: CredentialLocator where Credentials == CopilotCredentials {
+    /// Returns credentials for every GitHub login the locator can authenticate,
+    /// plus the active login from `hosts.yml` (which may have no resolvable token).
+    func locateAll() async throws -> (activeLogin: AccountEmail, credentials: [CopilotCredentials])
+}
 
 // MARK: - Errors
 
@@ -74,22 +86,35 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
     private let fileManager: FileManager
     private let logger: FileLogger
     private let processRunner: ProcessRunning
+    private let session: URLSession
+    /// Token from an unscoped keychain lookup, keyed by login from `/user`.
+    private var unscopedKeychainCredential: (login: String, token: String)?
 
     public init(
         environment: [String: String] = ProcessInfo.processInfo.environment,
         hostsFilePathOverride: String? = nil,
         fileManager: FileManager = .default,
         logger: FileLogger = Loggers.copilot,
-        processRunner: ProcessRunning = FoundationProcessRunner()
+        processRunner: ProcessRunning = FoundationProcessRunner(),
+        session: URLSession = .shared
     ) {
         self.environment = environment
         self.hostsFilePathOverride = hostsFilePathOverride
         self.fileManager = fileManager
         self.logger = logger
         self.processRunner = processRunner
+        self.session = session
     }
 
     public func locate() async throws -> CopilotCredentials {
+        let batch = try await locateAll()
+        guard let active = batch.credentials.first(where: { $0.activeLogin == batch.activeLogin }) else {
+            throw CopilotCredentialLocatorError.noTokenAvailable(activeLogin: batch.activeLogin.rawValue)
+        }
+        return active
+    }
+
+    public func locateAll() async throws -> (activeLogin: AccountEmail, credentials: [CopilotCredentials]) {
         let parsed = try resolveHostsConfig()
 
         guard let activeLoginString = parsed.config.activeLogin, !activeLoginString.isEmpty else {
@@ -97,23 +122,106 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
         }
         let activeLogin = AccountEmail(rawValue: activeLoginString)
 
-        // Cascade: env var (test override / explicit) → keychain → hosts.yml per-user oauth_token
-        if let envToken = environment[Self.envVarName], !envToken.isEmpty {
-            logger.log(.debug, "Copilot token resolved from $\(Self.envVarName)")
-            return CopilotCredentials(accessToken: envToken, activeLogin: activeLogin, tokenSource: .envVar)
+        unscopedKeychainCredential = nil
+        let logins = try await discoverLogins(from: parsed.config)
+        var credentials: [CopilotCredentials] = []
+        for login in logins {
+            let isActive = login == activeLoginString
+            guard let resolved = try await resolveToken(for: login, config: parsed.config, isActiveLogin: isActive) else {
+                continue
+            }
+            credentials.append(CopilotCredentials(
+                accessToken: resolved.token,
+                activeLogin: AccountEmail(rawValue: login),
+                tokenSource: resolved.source,
+                isActive: isActive
+            ))
         }
 
-        if let keychainToken = try await tryLoadKeychainToken() {
-            logger.log(.debug, "Copilot token resolved from gh keychain")
-            return CopilotCredentials(accessToken: keychainToken, activeLogin: activeLogin, tokenSource: .keychain)
+        return (activeLogin, credentials)
+    }
+
+    /// Logins the locator will attempt to authenticate — union of `users:` entries,
+    /// the active `user:` field, and the login owning the gh keychain token.
+    public static func knownLogins(from config: HostsConfig) -> [String] {
+        var logins = Set(config.registeredUserLogins)
+        logins.formUnion(config.perUserTokens.keys)
+        if let activeLogin = config.activeLogin, !activeLogin.isEmpty {
+            logins.insert(activeLogin)
+        }
+        return logins.sorted()
+    }
+
+    private func discoverLogins(from config: HostsConfig) async throws -> [String] {
+        var logins = Set(Self.knownLogins(from: config))
+        if let keychainToken = try await tryLoadKeychainToken(),
+           let keychainLogin = await loginForToken(keychainToken) {
+            logins.insert(keychainLogin)
+            unscopedKeychainCredential = (keychainLogin, keychainToken)
+        }
+        return logins.sorted()
+    }
+
+    private func loginForToken(_ token: String) async -> String? {
+        var request = URLRequest(url: Self.githubUserURL)
+        request.setValue("token \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = CopilotConstants.requestTimeoutSeconds
+
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            logger.log(.warning, "Failed to resolve GitHub login for token: \(error)")
+            return nil
         }
 
-        if let hostsToken = parsed.config.tokenForLogin(activeLoginString) {
-            logger.log(.debug, "Copilot token resolved from hosts.yml")
-            return CopilotCredentials(accessToken: hostsToken, activeLogin: activeLogin, tokenSource: .hostsFile)
+        let httpCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+        guard httpCode == 200 else {
+            logger.log(.debug, "GitHub /user returned HTTP \(httpCode) while resolving token login")
+            return nil
         }
 
-        throw CopilotCredentialLocatorError.noTokenAvailable(activeLogin: activeLoginString)
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let login = json["login"] as? String,
+                  !login.isEmpty else {
+                return nil
+            }
+            return login
+        } catch {
+            logger.log(.debug, "GitHub /user JSON parse failed: \(error)")
+            return nil
+        }
+    }
+
+    private static let githubUserURL = URL(string: "https://api.github.com/user")! // known-valid literal
+
+    private func resolveToken(
+        for login: String,
+        config: HostsConfig,
+        isActiveLogin: Bool
+    ) async throws -> (token: String, source: TokenSource)? {
+        if isActiveLogin,
+           let envToken = environment[Self.envVarName],
+           !envToken.isEmpty {
+            return (envToken, .envVar)
+        }
+
+        if let hostsToken = config.tokenForLogin(login) {
+            return (hostsToken, .hostsFile)
+        }
+
+        if let keychainToken = try await tryLoadKeychainToken(for: login) {
+            return (keychainToken, .keychain)
+        }
+
+        if let unscoped = unscopedKeychainCredential, unscoped.login == login {
+            return (unscoped.token, .keychain)
+        }
+
+        return nil
     }
 
     // MARK: - hosts.yml resolution
@@ -122,6 +230,20 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
         public let activeLogin: String?
         public let hostLevelToken: String?
         public let perUserTokens: [String: String]
+        /// Every login listed under `users:` — with or without a stored oauth token.
+        public let registeredUserLogins: [String]
+
+        public init(
+            activeLogin: String?,
+            hostLevelToken: String?,
+            perUserTokens: [String: String],
+            registeredUserLogins: [String] = []
+        ) {
+            self.activeLogin = activeLogin
+            self.hostLevelToken = hostLevelToken
+            self.perUserTokens = perUserTokens
+            self.registeredUserLogins = registeredUserLogins
+        }
 
         public func tokenForLogin(_ login: String) -> String? {
             perUserTokens[login] ?? hostLevelToken
@@ -160,6 +282,18 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
     }
 
     private func hostsFileCandidatePaths() -> [String] {
+        Self.candidatePaths(
+            environment: environment,
+            hostsFilePathOverride: hostsFilePathOverride,
+            fileManager: fileManager
+        )
+    }
+
+    private static func candidatePaths(
+        environment: [String: String],
+        hostsFilePathOverride: String?,
+        fileManager: FileManager
+    ) -> [String] {
         if let override = hostsFilePathOverride {
             return [override]
         }
@@ -197,6 +331,7 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
         var activeLogin: String?
         var hostLevelToken: String?
         var perUserTokens: [String: String] = [:]
+        var registeredUserLogins: Set<String> = []
 
         // `hostBlockIndent` is the indent of the first non-empty line under github.com:
         // — gh emits 4 spaces but we lock onto whatever the file uses.
@@ -246,6 +381,7 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
                 // A user header looks like `<login>:` (no space-stripped value, no inline scalar).
                 if trimmed.hasSuffix(":"), !trimmed.contains(" ") {
                     currentUserLogin = String(trimmed.dropLast())
+                    registeredUserLogins.insert(currentUserLogin!)
                     continue
                 }
                 // A user-scoped key — currently we only care about oauth_token.
@@ -259,7 +395,8 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
         return HostsConfig(
             activeLogin: activeLogin,
             hostLevelToken: hostLevelToken,
-            perUserTokens: perUserTokens
+            perUserTokens: perUserTokens,
+            registeredUserLogins: registeredUserLogins.sorted()
         )
     }
 
@@ -281,13 +418,20 @@ public actor CopilotCredentialLocator: CopilotCredentialLocating {
 
     // MARK: - Keychain
 
-    /// Reads the gh CLI token from the macOS keychain. Returns `nil` if the
-    /// entry is absent (a clean signal to the cascade), throws for transport
-    /// failures (timeout, denied) so they don't masquerade as "no token".
-    private func tryLoadKeychainToken() async throws -> String? {
+    /// Reads the gh CLI token from the macOS keychain. When `login` is set, gh's
+    /// per-account item is queried (`-a <login>`); otherwise the unscoped lookup
+    /// is used (returns an arbitrary stored account). Returns `nil` if the entry
+    /// is absent, throws for transport failures (timeout, denied).
+    private func tryLoadKeychainToken(for login: String? = nil) async throws -> String? {
+        var arguments = ["find-generic-password", "-s", Self.keychainService]
+        if let login, !login.isEmpty {
+            arguments.append(contentsOf: ["-a", login])
+        }
+        arguments.append("-w")
+
         let result = try await processRunner.run(
             executablePath: "/usr/bin/security",
-            arguments: ["find-generic-password", "-s", Self.keychainService, "-w"],
+            arguments: arguments,
             timeoutSeconds: Self.keychainTimeoutSeconds
         )
         if result.timedOut {

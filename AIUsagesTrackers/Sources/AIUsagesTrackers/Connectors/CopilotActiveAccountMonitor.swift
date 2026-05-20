@@ -10,6 +10,7 @@ public actor CopilotActiveAccountMonitor: ActiveAccountMonitoring {
     private let environment: [String: String]
     private let hostsFilePathOverride: String?
     private let fileManager: FileManager
+    private let usagesFileManager: UsagesFileManager
     private let logger: FileLogger
     private let interval: Duration
     /// Emits the new active GitHub login so callers can invalidate any cached
@@ -19,10 +20,13 @@ public actor CopilotActiveAccountMonitor: ActiveAccountMonitoring {
     private var monitorTask: Task<Void, Never>?
     private var lastObservedLogin: AccountEmail?
 
+    private static let monitoredVendor: Vendor = .copilot
+
     public init(
         environment: [String: String] = ProcessInfo.processInfo.environment,
         hostsFilePathOverride: String? = nil,
         fileManager: FileManager = .default,
+        usagesFileManager: UsagesFileManager = .shared,
         logger: FileLogger = Loggers.copilot,
         interval: Duration = CopilotActiveAccountMonitor.defaultInterval,
         onActiveAccountChanged: (@Sendable (AccountEmail) async -> Void)? = nil
@@ -30,6 +34,7 @@ public actor CopilotActiveAccountMonitor: ActiveAccountMonitoring {
         self.environment = environment
         self.hostsFilePathOverride = hostsFilePathOverride
         self.fileManager = fileManager
+        self.usagesFileManager = usagesFileManager
         self.logger = logger
         self.interval = interval
         self.onActiveAccountChanged = onActiveAccountChanged
@@ -64,6 +69,9 @@ public actor CopilotActiveAccountMonitor: ActiveAccountMonitoring {
             logger.log(.debug, "Copilot active login unresolved — keeping previous state")
             return
         }
+
+        await usagesFileManager.updateIsActive(vendor: Self.monitoredVendor, activeAccount: login)
+        logger.log(.debug, "Copilot isActive updated: activeAccount=\(login.rawValue)")
 
         let previous = lastObservedLogin
         lastObservedLogin = login
