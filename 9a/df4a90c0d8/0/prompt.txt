@@ -11,3 +11,7 @@ après : ro*****@****fr
 ---
 
 le skill assistant-merge fait un squash de la PR ? ou un merge standard ? (je préfèrerais un merge standard ... si c'est ambigu, il faut modifier le skill)
+
+---
+
+oui je veux un merge standard et modifier les docs associées
