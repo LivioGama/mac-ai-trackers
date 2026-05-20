@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.5.4",
+  "checkpoint_id": "3df54d4a2426",
+  "session_id": "c24e913c-ce94-4284-b1e1-3775947f1dac",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-20T17:56:56.099078Z",
+  "branch": "fix/claude-multiple-keychain-entries",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "docs/VENDOR-PLUGIN-CONTRACT.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "852dd440e4b0",
+  "checkpoint_transcript_start": 312,
+  "transcript_lines_at_start": 312,
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 8643,
+    "cache_read_tokens": 1052697,
+    "output_tokens": 2318,
+    "api_call_count": 8
+  },
+  "session_metrics": {
+    "turn_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-20T17:56:55.362863Z",
+    "agent_lines": 5,
+    "agent_removed": 3,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 5,
+    "total_lines_changed": 8,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
